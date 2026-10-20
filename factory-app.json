@@ -1,0 +1,16 @@
+{
+  "slug": "nightstalker",
+  "displayName": "Nightstalker",
+  "package": "io.github.nhilaire.nightstalker",
+  "stack": null,
+  "description": "Top-down arcade maze shooter for Android, an homage to Intellivision Night Stalker, ported from an earlier Expo prototype",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "fallbackLanguage": "en",
+  "displayNames": {
+    "en": "Nightstalker"
+  },
+  "factoryVersion": "1.0.0"
+}
