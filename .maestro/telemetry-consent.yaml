@@ -1,20 +1,30 @@
 appId: io.github.nhilaire.nightstalker
-name: Telemetry - accept consent and play one round (events checked in logcat by verify.mjs)
+name: Telemetry - accept consent, play and quit one run (events checked in logcat by verify.mjs)
 tags:
   - telemetry
 ---
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "consent-screen"
+    timeout: 30000
 - tapOn:
     id: "consent-accept"
 - assertVisible:
     id: "home-screen"
 - tapOn:
     id: "home-play"
-- tapOn:
-    id: "game-tap-zone"
+- assertVisible:
+    id: "game-screen"
 - extendedWaitUntil:
-    visible:
-      id: "game-over-screen"
-    timeout: 20000
+    visible: "NOT-A-REAL-TEXT"
+    timeout: 3000
+    optional: true
+- tapOn:
+    id: "game-pause"
+- tapOn:
+    id: "pause-quit"
+- assertVisible:
+    id: "game-over-screen"
 - takeScreenshot: telemetry-game-over

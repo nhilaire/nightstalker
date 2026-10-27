@@ -1,0 +1,47 @@
+appId: io.github.nhilaire.nightstalker
+name: Guide and About - the 19 power-ups in 6 groups, the story and the version
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "consent-screen"
+    timeout: 30000
+- tapOn:
+    id: "consent-refuse"
+- runFlow: helpers/french.yaml
+# AC-43: the guide.
+- tapOn:
+    id: "home-guide"
+- assertVisible:
+    id: "guide-screen"
+- assertVisible:
+    id: "guide-slowMo"
+- takeScreenshot: 08-guide
+- scrollUntilVisible:
+    element:
+      id: "guide-mystery"
+    timeout: 30000
+- assertVisible:
+    id: "guide-group-mystery"
+- takeScreenshot: 09-guide-end
+- tapOn:
+    id: "guide-back"
+# AC-44: About.
+- tapOn:
+    id: "home-about"
+- assertVisible:
+    id: "about-story"
+- assertVisible: "Enfant, j'ai découvert Night Stalker.*"
+- takeScreenshot: 10-about
+- scrollUntilVisible:
+    element: "Version [0-9]+[.][0-9]+[.][0-9]+"
+    timeout: 30000
+- assertVisible: "Inspiré de Night Stalker.*"
+- takeScreenshot: 11-about-end
+- tapOn:
+    id: "about-back"
+- assertVisible:
+    id: "home-screen"

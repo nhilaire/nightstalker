@@ -1,0 +1,82 @@
+appId: io.github.nhilaire.nightstalker
+name: Settings - every switch and the fire mode survive a restart, swapped controls move the joystick
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "consent-screen"
+    timeout: 30000
+- tapOn:
+    id: "consent-refuse"
+- runFlow: helpers/french.yaml
+# AC-39: default hint, joystick on the left.
+- assertVisible: "← Gauche Déplacement"
+- tapOn:
+    id: "home-settings"
+- tapOn:
+    id: "settings-swap"
+- tapOn:
+    id: "settings-fire-dpad"
+- tapOn:
+    id: "settings-modern"
+- tapOn:
+    id: "settings-sound"
+- scrollUntilVisible:
+    element:
+      id: "settings-haptics"
+- tapOn:
+    id: "settings-ambience"
+- tapOn:
+    id: "settings-haptics"
+- takeScreenshot: 05-settings-changed
+# AC-38: the values survive a restart.
+- stopApp
+- launchApp:
+    stopApp: false
+- extendedWaitUntil:
+    visible:
+      id: "home-screen"
+    timeout: 30000
+- assertVisible: "← Gauche Tir"
+- assertVisible: "Déplacement Droite →"
+- takeScreenshot: 06-home-swapped
+- tapOn:
+    id: "home-settings"
+- assertVisible:
+    id: "settings-swap"
+    checked: true
+- assertVisible:
+    id: "settings-modern"
+    checked: false
+- assertVisible:
+    id: "settings-sound"
+    checked: false
+- assertVisible:
+    id: "settings-fire-dpad"
+    checked: true
+- scrollUntilVisible:
+    element:
+      id: "settings-haptics"
+- assertVisible:
+    id: "settings-ambience"
+    checked: false
+- assertVisible:
+    id: "settings-haptics"
+    checked: false
+- tapOn:
+    id: "settings-back"
+# AC-39: in a run, the joystick is on the right and the d-pad on the left.
+- tapOn:
+    id: "home-play"
+- assertVisible:
+    id: "joystick-right"
+- assertVisible:
+    id: "fire-N"
+- takeScreenshot: 07-game-swapped-dpad
+- tapOn:
+    id: "game-pause"
+- tapOn:
+    id: "pause-quit"

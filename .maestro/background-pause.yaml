@@ -1,0 +1,30 @@
+appId: io.github.nhilaire.nightstalker
+name: Background - leaving the app mid-run pauses it
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "consent-screen"
+    timeout: 30000
+- tapOn:
+    id: "consent-refuse"
+- tapOn:
+    id: "home-play"
+- assertVisible:
+    id: "game-screen"
+# AC-42: home button, then back to the app.
+- pressKey: Home
+- launchApp:
+    stopApp: false
+- extendedWaitUntil:
+    visible:
+      id: "pause-overlay"
+    timeout: 10000
+- takeScreenshot: 03-paused-after-background
+- tapOn:
+    id: "pause-resume"
+- assertNotVisible:
+    id: "pause-overlay"

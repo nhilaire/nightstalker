@@ -1,33 +1,70 @@
 appId: io.github.nhilaire.nightstalker
-name: Smoke (any phone language) - first launch, refuse telemetry, play one round
+name: Smoke - first launch, refuse telemetry, play, pause, quit, game over, replay and back home
 tags:
   - smoke
 ---
 - launchApp:
     clearState: true
+# AC-01: the consent screen comes first, refusing is one tap.
+- extendedWaitUntil:
+    visible:
+      id: "consent-screen"
+    timeout: 30000
 - assertVisible:
-    id: "consent-screen"
+    id: "consent-accept"
 - takeScreenshot: 01-consent
 - tapOn:
     id: "consent-refuse"
-- assertVisible:
-    id: "home-screen"
+- runFlow: helpers/french.yaml
 - takeScreenshot: readme-1-home
+# AC-35: a run starts with 6 lives, 000000 and no gun.
 - tapOn:
     id: "home-play"
 - assertVisible:
-    id: "game-tap-zone"
+    id: "game-screen"
+- assertVisible: "×6"
+- assertVisible: "000000"
+- assertVisible: "PAS D'ARME"
+# Walk out of the bunker (up) and fire while the enemies come out.
+- swipe:
+    start: "12%,80%"
+    end: "12%,60%"
+    duration: 1500
 - tapOn:
-    id: "game-tap-zone"
-- tapOn:
-    id: "game-tap-zone"
-- takeScreenshot: readme-2-game
+    id: "fire-quadrants"
 - extendedWaitUntil:
-    visible:
-      id: "game-over-screen"
-    timeout: 20000
+    visible: "NOT-A-REAL-TEXT"
+    timeout: 4000
+    optional: true
+- takeScreenshot: readme-2-gameplay
+- tapOn:
+    id: "game-pause"
+- assertVisible: "PAUSE"
+- assertVisible: "Reprendre"
+- takeScreenshot: 02-paused
+- tapOn:
+    id: "pause-resume"
+- assertNotVisible:
+    id: "pause-overlay"
+- tapOn:
+    id: "game-pause"
+- tapOn:
+    id: "pause-quit"
+- assertVisible:
+    id: "game-over-screen"
+- assertVisible: "PARTIE TERMINÉE"
+- assertVisible: "MEILLEURS SCORES"
+- assertVisible: "1\\."
 - takeScreenshot: readme-3-game-over
 - tapOn:
-    id: "game-home"
+    id: "gameover-replay"
+- assertVisible:
+    id: "game-screen"
+- tapOn:
+    id: "game-pause"
+- tapOn:
+    id: "pause-quit"
+- tapOn:
+    id: "gameover-menu"
 - assertVisible:
     id: "home-screen"

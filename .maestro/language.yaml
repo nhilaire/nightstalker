@@ -5,10 +5,17 @@ tags:
 ---
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "consent-screen"
+    timeout: 30000
 - tapOn:
     id: "consent-refuse"
 - tapOn:
     id: "home-settings"
+- scrollUntilVisible:
+    element:
+      id: "settings-language-fr"
 - tapOn:
     id: "settings-language-fr"
 - assertVisible: "Paramètres"
@@ -24,9 +31,16 @@ tags:
 - stopApp
 - launchApp:
     stopApp: false
+- extendedWaitUntil:
+    visible:
+      id: "home-screen"
+    timeout: 30000
 - assertVisible: "Play"
 - tapOn:
     id: "home-settings"
+- scrollUntilVisible:
+    element:
+      id: "settings-language-auto"
 - tapOn:
     id: "settings-language-auto"
 - tapOn:
