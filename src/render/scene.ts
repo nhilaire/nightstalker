@@ -207,7 +207,7 @@ function drawPlayer(canvas: SkCanvas, state: GameState): void {
   if (modern && state.buffs.shieldHits > 0) canvas.drawCircle(p.x, p.y, 6, paint('#34D399', 0.35));
 }
 
-function spriteFor(e: Enemy, xray: boolean): SpriteDef {
+export function spriteFor(e: Enemy, xray: boolean): SpriteDef {
   switch (e.type) {
     case 'spider':
       return SPIDER;
