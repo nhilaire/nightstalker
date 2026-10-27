@@ -28,7 +28,7 @@ function Row({ label, hint, value, onValueChange, testID }: { label: string; hin
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.help}>{hint}</Text>
       </View>
-      <Switch value={value} onValueChange={onValueChange} accessibilityLabel={label} testID={testID} trackColor={{ true: colors.accent, false: colors.surface }} />
+      <Switch value={value} onValueChange={onValueChange} accessibilityLabel={label} testID={testID} trackColor={{ true: colors.accent, false: colors.switchOff }} thumbColor={value ? colors.text : colors.muted} />
     </View>
   );
 }

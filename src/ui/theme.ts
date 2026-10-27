@@ -8,6 +8,8 @@ export const colors = {
   accentText: '#000000',
   highlight: '#FACC15',
   danger: '#EF4444',
+  // Track of a switch that is off: visible on the surface colour.
+  switchOff: '#475569',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 40 } as const;
