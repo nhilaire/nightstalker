@@ -8,7 +8,7 @@ Decision: expo
 
 ## Context
 
-Nightstalker is a faithful port of an Expo SDK 55 prototype (`C:/dev/Nightstalker`, Expo managed + Skia). The
+Nightstalker is a faithful port of an Expo SDK 55 prototype (Expo managed + Skia). The
 approved PRD needs:
 
 - **Rendering:** a 200 x 120 logical playfield scaled to the screen, ~8 pixel-art sprites redrawn every frame, up to

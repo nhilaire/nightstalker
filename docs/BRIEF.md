@@ -6,9 +6,9 @@ Final app name: Nightstalker
 
 ## Original brief
 
-> Jeu pour android, inspiration Nightstalker de la console intellevision, faire passer C:\dev\Nightstalker dans l'usine
+> Jeu pour android, inspiration Nightstalker de la console intellevision, faire passer le prototype dans l'usine
 
-Source project: `C:/dev/Nightstalker` (Expo SDK 55 + TypeScript + `@shopify/react-native-skia` 2.4, landscape,
+Source project: the author's earlier Expo prototype (Expo SDK 55 + TypeScript + `@shopify/react-native-skia` 2.4, landscape,
 ~5,700 lines, not a git repository, English UI). Its `SPECS.md` documents the design (maze 20x12, bunker, spider web,
 pen, 6-bullet gun pickups, 8 enemy types, score-based roster tiers, reactive shields, 4 fire modes, debug cheats);
 the code is newer than the spec (19 power-ups in `src/game/powerups.ts`, About and power-up guide screens).
@@ -110,7 +110,7 @@ Mark assumptions the user accepted as `(default accepted)`.
 - Final app name "Nightstalker" and slug `nightstalker` chosen by the user, knowingly: "Night Stalker" is a
   Mattel/Intellivision title and the repository will be public. The About screen states the homage and that it is not
   an official product.
-- Port of `C:/dev/Nightstalker`: the code is the rules reference; differences with `SPECS.md` are resolved in favour
+- Port of the earlier prototype: the code is the rules reference; differences with `SPECS.md` are resolved in favour
   of the code unless the user decides otherwise in the PRD.
 - Never copy from the source folder: `deploy.bat`, `deploy/`, `build-quick.bat`, `build-release.bat`, `android/`, `dist/`, `.expo/`, `.github/`. The prototype's
   old package is replaced by the factory package `io.github.nhilaire.nightstalker`.

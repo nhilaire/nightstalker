@@ -22,7 +22,9 @@ Android phone (allow installation from unknown sources).
 
 - No account, no ads, no personal data.
 - Anonymous usage statistics and crash reports (Firebase) are sent **only if you accept** on first launch.
-  You can change your choice at any time in *Paramètres*.
+  You can change your choice at any time in *Settings*.
+- What is sent: game starts and ends (score, tier reached, duration), power-ups picked up, settings changed, and
+  crash reports. No identifiers, no advertising ID, no location.
 
 ## Build from source
 

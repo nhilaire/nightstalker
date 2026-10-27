@@ -1,6 +1,6 @@
 # Device checks on the emulator: v0.1.0
 
-Commit: 4c6088f. APK: `dist/nightstalker-0.1.0-universal.apk`, SHA-256
+Commit: 9a21285. APK: `dist/nightstalker-0.1.0-universal.apk`, SHA-256
 `d7fd5b6374877a2cfe73cad4f87bbfab160e50ebf1088d578dd01970ee68c5c5`. Emulator: emulator-5554 (Android, 2400 x 1080).
 
 | Check | Command | Result | Raw output |

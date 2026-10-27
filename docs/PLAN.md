@@ -27,7 +27,7 @@ Format: `- [ ] T-01 Title (AC-01, AC-02) - proof: unit|e2e|device`. Check the bo
 
 ## Notes
 
-- Port source: `C:/dev/Nightstalker` (code is the rules reference; deviations D1-D5 in the PRD). Copy game code and
+- Port source: the author's earlier Expo prototype (code is the rules reference; deviations D1-D5 in the PRD). Copy game code and
   ideas only, never `deploy.bat`, `deploy/`, `build-*.bat`, `android/`, `dist/`, `.expo/`, `.github/`.
 - The engine keeps the prototype's mutable `tick(state, dt, input)` design (performance), but randomness is injected
   (`Rng`) and side effects are returned as events (sounds, haptics, telemetry) instead of SFX callbacks.

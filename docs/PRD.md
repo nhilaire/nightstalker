@@ -19,7 +19,7 @@ escalating roster of robots, avoids a paralysing spider and bats, and shelters i
 difficulty rises with the score. Fun comes from scarce ammunition, readable threats and the "one more run" of beating
 the best score. An optional modern mode (on by default) adds 19 power-ups and combo bonuses.
 
-This is a **faithful port** of the user's earlier Expo prototype `C:/dev/Nightstalker`: its **code** is the rules
+This is a **faithful port** of the user's earlier Expo prototype: its **code** is the rules
 reference (newer than its `SPECS.md`); every number below comes from that code. Deviations decided with the user are
 marked **D1-D5**.
 

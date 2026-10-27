@@ -1,7 +1,7 @@
 # Verification report: Nightstalker v0.1.0
 
 Overall: PASS
-Commit: 4c6088f
+Commit: 9a21285
 Date: 2026-10-27 15:09 UTC
 Stack: expo
 Target: emulator sdk_gphone64_x86_64, Android 16 (API 36, x86_64)
@@ -10,7 +10,7 @@ SHA-256: d7fd5b6374877a2cfe73cad4f87bbfab160e50ebf1088d578dd01970ee68c5c5
 
 | # | Step | Result | Evidence |
 |---|---|---|---|
-| 1 | clean working tree | PASS | commit 4c6088f |
+| 1 | clean working tree | PASS | commit 9a21285 |
 | 2 | typecheck | PASS | `tsc --noEmit` exit 0 |
 | 3 | unit tests (Jest) | PASS | Tests:       209 passed, 209 total |
 | 4 | expo-doctor | WARN | issues reported (see raw/expo-doctor.txt) |
