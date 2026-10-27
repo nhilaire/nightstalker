@@ -87,6 +87,17 @@ describe('reactive shields (AC-17)', () => {
     expect(robot.hp).toBe(0);
   });
 
+  it('counts the shield down in the real enemy update: up before 2 s, gone after', () => {
+    const state = newGame();
+    freezeRoster(state);
+    const robot = placeEnemy(state, 'black1', 12, 1);
+    robot.shieldTimer = SHIELD_TIME;
+    for (let i = 0; i < Math.round(1.9 / DT); i++) tickEnemy(state, robot, DT, constantRng(0.5));
+    expect(robot.shieldTimer).toBeGreaterThan(0);
+    for (let i = 0; i < Math.round(0.2 / DT); i++) tickEnemy(state, robot, DT, constantRng(0.5));
+    expect(robot.shieldTimer).toBe(0);
+  });
+
   it('never shields the one-hit types', () => {
     for (const type of ['spider', 'bat', 'gray', 'blue'] as const) expect(hasReactiveShield(type)).toBe(false);
   });

@@ -128,6 +128,24 @@ function rect(canvas: SkCanvas, x: number, y: number, w: number, h: number, colo
 
 const blinkOn = (t: number, hz: number) => Math.floor(t * hz * 2) % 2 === 0;
 
+// X-ray power-up (modern mode): invisible robots drawn clearly and robots' lines of sight drawn.
+export function xrayActive(state: GameState): boolean {
+  return state.modernMode && state.buffs.xrayTimer > 0;
+}
+
+// One thin rectangle from each active robot that has the player in its line of sight, while x-ray lasts.
+export function xrayLines(state: GameState): { x: number; y: number; w: number; h: number }[] {
+  if (!xrayActive(state)) return [];
+  const p = state.player;
+  const out: { x: number; y: number; w: number; h: number }[] = [];
+  for (const e of state.enemies) {
+    if (e.spawning || !lineOfSight(state, e)) continue;
+    if (Math.abs(p.y - e.y) <= Math.abs(p.x - e.x)) out.push({ x: Math.min(e.x, p.x), y: e.y - 0.3, w: Math.abs(p.x - e.x), h: 0.6 });
+    else out.push({ x: e.x - 0.3, y: Math.min(e.y, p.y), w: 0.6, h: Math.abs(p.y - e.y) });
+  }
+  return out;
+}
+
 export function drawScene(canvas: SkCanvas, state: GameState, view: View, time: number): void {
   rect(canvas, 0, 0, view.width, view.height, '#000000');
   canvas.save();
@@ -153,7 +171,7 @@ export function drawScene(canvas: SkCanvas, state: GameState, view: View, time: 
   if (state.gun && blinkOn(time, 2)) sprite(canvas, GUN, state.gun.col * TILE + TILE / 2, state.gun.row * TILE + TILE / 2);
 
   const modern = state.modernMode;
-  const xray = modern && state.buffs.xrayTimer > 0;
+  const xray = xrayActive(state);
   if (modern) for (const pu of state.powerUps) drawPowerUp(canvas, pu);
 
   if (modern && state.buffs.decoyTimer > 0) {
@@ -161,14 +179,7 @@ export function drawScene(canvas: SkCanvas, state: GameState, view: View, time: 
     canvas.drawCircle(state.buffs.decoyX, state.buffs.decoyY, 7, paint('#FBBF24', 0.15));
   }
 
-  if (xray) {
-    for (const e of state.enemies) {
-      if (e.spawning || !lineOfSight(state, e)) continue;
-      const p = state.player;
-      if (Math.abs(p.y - e.y) <= Math.abs(p.x - e.x)) rect(canvas, Math.min(e.x, p.x), e.y - 0.3, Math.abs(p.x - e.x), 0.6, COLORS.xray, 0.45);
-      else rect(canvas, e.x - 0.3, Math.min(e.y, p.y), 0.6, Math.abs(p.y - e.y), COLORS.xray, 0.45);
-    }
-  }
+  for (const l of xrayLines(state)) rect(canvas, l.x, l.y, l.w, l.h, COLORS.xray, 0.45);
 
   for (const e of state.enemies) drawEnemy(canvas, e, xray);
 

@@ -6,6 +6,7 @@ import App from '../App';
 import { POWERUP_KINDS } from '../game/powerups';
 import { DICTIONARIES } from '../i18n';
 import { deviceLanguageTags } from '../i18n/deviceLocale';
+import { addHighScore } from '../storage/highScores';
 
 const fr = DICTIONARIES.fr;
 
@@ -52,7 +53,7 @@ describe('home, game over and best score (AC-35, AC-37)', () => {
   });
 
   it('shows the saved best score on Home after a restart', async () => {
-    await AsyncStorage.setItem('nightstalker.highscores.v1', JSON.stringify([{ score: 12300, date: '2026-10-27T10:00:00.000Z' }]));
+    await addHighScore(12300); // what the game over screen saves at the end of a run
     await openApp();
     expect(screen.getByTestId('home-best')).toHaveTextContent('012300');
   });

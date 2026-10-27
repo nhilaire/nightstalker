@@ -470,7 +470,9 @@ Screens, settings, persistence
   run and « Menu » goes back to Home.
 - AC-36 [unit] Given 12 finished runs, then the saved list keeps the 10 best in descending order, equal scores in insertion
   order, 0-score runs included; a run quit from the pause menu is saved too.
-- AC-37 [e2e] Given a finished run, when the app is restarted, then Home shows that score as the best score.
+- AC-37 [unit] Given a finished run saved by the game over screen, when the app is restarted, then Home shows that
+  score as the best score. (Amended 2026-10-27 with the user: release builds have no cheat, so an e2e run cannot score
+  reliably; the e2e flow `scores-persist.yaml` complements it by showing that saved runs survive a restart.)
 - AC-38 [e2e] Given Settings, when swap controls, fire mode, modern mode, sound effects, ambience and vibrations are
   changed, then the values survive a restart.
 - AC-39 [e2e] Given swap controls on, then in a run the joystick is on the right and the fire zone on the left, and

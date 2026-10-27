@@ -3,10 +3,10 @@ import { lineOfSight, tickEnemy } from '../game/ai';
 import { canPlayerEnter, tick } from '../game/engine';
 import { cellCenter } from '../game/maze';
 import { applyPickup } from '../game/powerups';
-import { constantRng } from '../game/rng';
+import { constantRng, Rng } from '../game/rng';
 import { isFreeCell } from '../game/spawn';
 import type { GameState } from '../game/types';
-import { spriteFor } from '../render/scene';
+import { spriteFor, xrayActive, xrayLines } from '../render/scene';
 import { ROBOT_INVISIBLE, ROBOT_INVISIBLE_XRAY } from '../render/sprites';
 import { DT, freezeRoster, input, newGame, placeEnemy, placePlayer, run } from '../test-utils/engine';
 
@@ -28,6 +28,50 @@ function armed(col = 5, row = 1, stubAi = true): GameState {
   state.powerUpSpawnTimer = 1e9;
   return state;
 }
+
+// Draws the listed values in order (then repeats the last one).
+function sequence(...values: number[]): Rng {
+  let i = 0;
+  return () => values[Math.min(i++, values.length - 1)];
+}
+
+describe('mystery through a real pickup (AC-33)', () => {
+  function mystery(rng: Rng) {
+    const state = armed();
+    state.score = 20000;
+    state.lives = 4;
+    state.gun = null;
+    const robot = placeEnemy(state, 'gray', 12, 1);
+    state.powerUps.push({ id: 1, kind: 'mystery', col: 5, row: 1, ttl: 12 });
+    tick(state, DT, input(), rng);
+    return { state, robot };
+  }
+
+  it('can curse with slow: player speed halved for 10 s', () => {
+    const { state } = mystery(sequence(0.6, 0.1));
+    expect(state.combo.flash).toEqual({ kind: 'curse', curse: 'slow' });
+    expect(state.buffs.slowDebuffTimer).toBeGreaterThan(9.9);
+  });
+
+  it('can curse with no ammo: gun lost, a gun placed', () => {
+    const { state } = mystery(sequence(0.6, 0.5));
+    expect(state.combo.flash).toEqual({ kind: 'curse', curse: 'noAmmo' });
+    expect(state.player).toMatchObject({ hasGun: false, ammo: 0 });
+    expect(state.gun).not.toBeNull();
+  });
+
+  it('can curse with a volley: every robot ready to fire', () => {
+    const { state, robot } = mystery(sequence(0.6, 0.9));
+    expect(state.combo.flash).toEqual({ kind: 'curse', curse: 'volley' });
+    expect(robot.shootCooldown).toBe(0);
+  });
+
+  it('can give a buff with its effect', () => {
+    const { state } = mystery(sequence(0.2, 0));
+    expect(state.combo.flash).toEqual({ kind: 'powerup', powerUp: 'slowMo' });
+    expect(state.buffs.slowMoTimer).toBeGreaterThan(24.9);
+  });
+});
 
 describe('power-up effects (AC-32)', () => {
   it('heavy: a shot kills a 3 HP robot in one hit, 3 charges', () => {
@@ -139,8 +183,16 @@ describe('power-up effects (AC-32)', () => {
     const ghost = placeEnemy(state, 'invisible', 12, 1);
     expect(spriteFor(ghost, false)).toBe(ROBOT_INVISIBLE);
     expect(spriteFor(ghost, true)).toBe(ROBOT_INVISIBLE_XRAY);
+    expect(xrayActive(state)).toBe(false);
+    expect(xrayLines(state)).toEqual([]);
     applyPickup(state, 'xray', constantRng(0.5));
     expect(state.buffs.xrayTimer).toBe(12);
+    expect(xrayActive(state)).toBe(true);
+    // The robot at (12, 1) sees the player at (5, 1): one horizontal line between them.
+    expect(xrayLines(state)).toEqual([{ x: 55, y: 14.7, w: 70, h: 0.6 }]);
+    run(state, 12.1);
+    expect(xrayActive(state)).toBe(false);
+    expect(xrayLines(state)).toEqual([]);
   });
 
   it('score x2 ends after 30 s and points go back to normal', () => {
