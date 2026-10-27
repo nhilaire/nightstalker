@@ -16,7 +16,7 @@ Format: `- [ ] T-01 Title (AC-01, AC-02) - proof: unit|e2e|device`. Check the bo
 - [x] T-09 Power-ups: spawn timing and placement, the 19 effects, mystery buffs and curses, HUD label without points (AC-31, AC-32, AC-33) - proof: unit
 - [x] T-10 Storage: top-10 scores (stable, 0-score runs, quit runs) and game settings (AC-36) - proof: unit
 - [x] T-11 Dictionaries fr/en with the PRD player copy, combo number format, language resolution (AC-02, AC-07) - proof: unit
-- [ ] T-12 Skia renderer: maze, bunker, web, sprites, bullets and lasers, particles, halos, decoy, x-ray (AC-46) - proof: device
+- [x] T-12 Skia renderer: maze, bunker, web, sprites, bullets and lasers, particles, halos, decoy, x-ray (AC-46) - proof: device
 - [ ] T-13 Controls: joystick and the four fire modes, swap sides (AC-14, AC-39) - proof: unit
 - [ ] T-14 Game screen: loop, HUD, pause overlay, background pause, cheats only in debug builds (AC-35, AC-41, AC-42) - proof: unit
 - [ ] T-15 Home, game over, settings, guide and about screens; routing; best score (AC-01, AC-03, AC-37, AC-38, AC-39, AC-43, AC-44) - proof: unit
