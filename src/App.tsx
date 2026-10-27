@@ -1,38 +1,50 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { bestOf, HighScore } from './game/highScores';
 import { LanguageSetting } from './i18n';
 import { I18nProvider } from './i18n/I18nProvider';
 import { AboutScreen } from './screens/AboutScreen';
 import { ConsentScreen } from './screens/ConsentScreen';
-import { GameScreen } from './screens/GameScreen';
+import { GameOverScreen } from './screens/GameOverScreen';
+import { GameScreen, RunResult } from './screens/GameScreen';
+import { GuideScreen } from './screens/GuideScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
-import { DEFAULT_SETTINGS } from './storage/settings';
-import { loadBestScore, saveBestScore } from './storage/bestScore';
+import { addHighScore, loadHighScores } from './storage/highScores';
 import { loadLanguageSetting, saveLanguageSetting } from './storage/languageSetting';
+import { DEFAULT_SETTINGS, GameSettings, loadSettings, saveSettings } from './storage/settings';
 import { Consent, loadConsent, saveConsent } from './telemetry/consentStore';
 import { applyConsent } from './telemetry/telemetry';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import { colors } from './ui/theme';
 
-type Route = 'home' | 'game' | 'settings' | 'about';
+type Route = 'home' | 'game' | 'gameover' | 'settings' | 'guide' | 'about';
 
 export default function App() {
   const [consent, setConsentState] = useState<Consent | 'loading'>('loading');
   const [route, setRoute] = useState<Route>('home');
-  const [bestScore, setBestScore] = useState(0);
+  const [scores, setScores] = useState<HighScore[]>([]);
+  const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [languageSetting, setLanguageSetting] = useState<LanguageSetting>('auto');
+  const [lastRun, setLastRun] = useState<RunResult | null>(null);
+  const [runId, setRunId] = useState(0);
 
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [storedConsent, storedBest, storedLanguage] = await Promise.all([loadConsent(), loadBestScore(), loadLanguageSetting()]);
+      const [storedConsent, storedScores, storedLanguage, storedSettings] = await Promise.all([
+        loadConsent(),
+        loadHighScores(),
+        loadLanguageSetting(),
+        loadSettings(),
+      ]);
       if (storedConsent !== 'unknown') await applyConsent(storedConsent === 'granted');
       if (alive) {
         setLanguageSetting(storedLanguage);
+        setScores(storedScores);
+        setSettings(storedSettings);
         setConsentState(storedConsent);
-        setBestScore(storedBest);
       }
     })();
     return () => {
@@ -52,10 +64,23 @@ export default function App() {
     await saveLanguageSetting(value);
   }, []);
 
-  const onGameOver = useCallback(async (score: number) => {
-    setBestScore((current) => Math.max(current, score));
-    await saveBestScore(score);
+  const changeSettings = useCallback(async (next: GameSettings) => {
+    setSettings(next);
+    await saveSettings(next);
   }, []);
+
+  const play = useCallback(() => {
+    setRunId((id) => id + 1);
+    setRoute('game');
+  }, []);
+
+  const onGameOver = useCallback(async (result: RunResult) => {
+    setLastRun(result);
+    setRoute('gameover');
+    setScores(await addHighScore(result.score));
+  }, []);
+
+  const home = () => setRoute('home');
 
   let content: React.ReactNode;
   if (consent === 'loading') {
@@ -67,13 +92,28 @@ export default function App() {
   } else if (consent === 'unknown') {
     content = <ConsentScreen onDecision={decide} />;
   } else if (route === 'game') {
-    content = <GameScreen settings={DEFAULT_SETTINGS} highScore={bestScore} onGameOver={(r) => { onGameOver(r.score); setRoute('home'); }} />;
-  } else if (route === 'about') {
-    content = <AboutScreen onBack={() => setRoute('home')} />;
+    content = <GameScreen key={runId} settings={settings} highScore={bestOf(scores)} onGameOver={onGameOver} />;
+  } else if (route === 'gameover' && lastRun) {
+    content = <GameOverScreen score={lastRun.score} newBest={lastRun.newBest} scores={scores} onReplay={play} onMenu={home} />;
   } else if (route === 'settings') {
-    content = <SettingsScreen telemetryEnabled={consent === 'granted'} onToggleTelemetry={decide} onBack={() => setRoute('home')} />;
+    content = (
+      <SettingsScreen settings={settings} onChange={changeSettings} telemetryEnabled={consent === 'granted'} onToggleTelemetry={decide} onBack={home} />
+    );
+  } else if (route === 'guide') {
+    content = <GuideScreen onBack={home} />;
+  } else if (route === 'about') {
+    content = <AboutScreen onBack={home} />;
   } else {
-    content = <HomeScreen bestScore={bestScore} onPlay={() => setRoute('game')} onSettings={() => setRoute('settings')} onAbout={() => setRoute('about')} />;
+    content = (
+      <HomeScreen
+        bestScore={bestOf(scores)}
+        swapControls={settings.swapControls}
+        onPlay={play}
+        onSettings={() => setRoute('settings')}
+        onGuide={() => setRoute('guide')}
+        onAbout={() => setRoute('about')}
+      />
+    );
   }
 
   return (

@@ -1,11 +1,13 @@
+// Arcade palette (prototype): black background, emerald accent, yellow highlights.
 export const colors = {
-  background: '#101828',
-  surface: '#1D2939',
+  background: '#000000',
+  surface: '#111827',
   text: '#F9FAFB',
-  muted: '#98A2B3',
-  accent: '#FDB022',
-  accentText: '#101828',
-  danger: '#F97066',
+  muted: '#94A3B8',
+  accent: '#10B981',
+  accentText: '#000000',
+  highlight: '#FACC15',
+  danger: '#EF4444',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 40 } as const;

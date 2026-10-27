@@ -7,11 +7,11 @@ import { Button } from '../ui/Button';
 import { Screen } from '../ui/Screen';
 import { colors, font, spacing } from '../ui/theme';
 
-// « À propos »: why this game exists (story from the discovery brief), a word from the author (a passionate
-// developer, free time, bugs are possible), the player's data, the version.
-function Section({ title, paragraphs }: { title: string; paragraphs: readonly string[] }) {
+// « À propos »: why this game exists (story from the discovery brief), how to play, the inspiration notice, a word
+// from the author (a passionate developer, free time), the player's data, the version.
+function Section({ title, paragraphs, testID }: { title: string; paragraphs: readonly string[]; testID?: string }) {
   return (
-    <View style={styles.section}>
+    <View style={styles.section} testID={testID}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {paragraphs.map((p) => (
         <Text key={p} style={styles.paragraph}>
@@ -40,7 +40,9 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
       </Text>
       <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.name}>{appName(language)}</Text>
-        <Section title={t.about.storyTitle} paragraphs={t.about.story} />
+        <Section title={t.about.storyTitle} paragraphs={t.about.story} testID="about-story" />
+        <Section title={t.about.howToTitle} paragraphs={t.about.howTo} />
+        <Section title={t.about.inspirationTitle} paragraphs={t.about.inspiration} />
         <Section title={t.about.authorTitle} paragraphs={t.about.author} />
         <Section title={t.about.dataTitle} paragraphs={t.about.data} />
         <Text style={styles.version}>{t.about.version(APP_VERSION)}</Text>
@@ -51,9 +53,9 @@ export function AboutScreen({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  title: { color: colors.text, fontSize: font.heading, fontWeight: '800' },
+  title: { color: colors.accent, fontSize: font.heading, fontWeight: '900', letterSpacing: 3 },
   body: { gap: spacing.lg, paddingBottom: spacing.md },
-  name: { color: colors.accent, fontSize: font.heading, fontWeight: '800' },
+  name: { color: colors.highlight, fontSize: font.heading, fontWeight: '900', letterSpacing: 2 },
   section: { gap: spacing.sm },
   sectionTitle: { color: colors.accent, fontSize: font.small, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' },
   paragraph: { color: colors.text, fontSize: font.body, lineHeight: 25 },

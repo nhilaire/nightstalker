@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import App from '../App';
-import { appName } from '../config/app';
 import { deviceLanguageTags } from '../i18n/deviceLocale';
 
 // render/fireEvent are awaited: asynchronous in React Native Testing Library 14+, harmless before.
@@ -18,7 +17,7 @@ describe('App', () => {
     expect(await screen.findByText('Ta vie privée')).toBeTruthy();
     await fireEvent.press(screen.getByText('Refuser'));
     expect(await screen.findByText('Jouer')).toBeTruthy();
-    expect(screen.getByText(appName('fr'))).toBeTruthy();
+    expect(screen.getByText('NIGHTSTALKER')).toBeTruthy();
   });
 
   it('speaks English on an English phone', async () => {
