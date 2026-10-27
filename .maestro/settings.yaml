@@ -22,13 +22,19 @@ tags:
     id: "settings-fire-dpad"
 - tapOn:
     id: "settings-modern"
+- scrollUntilVisible:
+    element:
+      id: "settings-sound"
 - tapOn:
     id: "settings-sound"
 - scrollUntilVisible:
     element:
-      id: "settings-haptics"
+      id: "settings-ambience"
 - tapOn:
     id: "settings-ambience"
+- scrollUntilVisible:
+    element:
+      id: "settings-haptics"
 - tapOn:
     id: "settings-haptics"
 - takeScreenshot: 05-settings-changed
@@ -49,20 +55,29 @@ tags:
     id: "settings-swap"
     checked: true
 - assertVisible:
-    id: "settings-modern"
-    checked: false
-- assertVisible:
-    id: "settings-sound"
-    checked: false
-- assertVisible:
     id: "settings-fire-dpad"
     checked: true
 - scrollUntilVisible:
     element:
-      id: "settings-haptics"
+      id: "settings-modern"
+- assertVisible:
+    id: "settings-modern"
+    checked: false
+- scrollUntilVisible:
+    element:
+      id: "settings-sound"
+- assertVisible:
+    id: "settings-sound"
+    checked: false
+- scrollUntilVisible:
+    element:
+      id: "settings-ambience"
 - assertVisible:
     id: "settings-ambience"
     checked: false
+- scrollUntilVisible:
+    element:
+      id: "settings-haptics"
 - assertVisible:
     id: "settings-haptics"
     checked: false

@@ -37,9 +37,11 @@ tags:
 - assertVisible: "Enfant, j'ai découvert Night Stalker.*"
 - takeScreenshot: 10-about
 - scrollUntilVisible:
+    element: "Inspiré de Night Stalker.*"
+    timeout: 30000
+- scrollUntilVisible:
     element: "Version [0-9]+[.][0-9]+[.][0-9]+"
     timeout: 30000
-- assertVisible: "Inspiré de Night Stalker.*"
 - takeScreenshot: 11-about-end
 - tapOn:
     id: "about-back"
