@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { BUNKER_HP, COLS, PLAYER_SPEED, PLAYER_WEB_SPEED, ROWS } from '../game/constants';
 import { canPlayerEnter } from '../game/engine';
 import { getMaze, isInsideBunker, MAZE_LAYOUT, spawnPoint } from '../game/maze';
@@ -6,6 +9,14 @@ import { freezeRoster, input, newGame, placePlayer, run } from '../test-utils/en
 afterEach(() => jest.restoreAllMocks());
 
 describe('maze (AC-08)', () => {
+  it('is exactly the layout of the PRD', () => {
+    const prd = fs.readFileSync(path.join(__dirname, '../../docs/PRD.md'), 'utf8');
+    const block = prd.slice(prd.indexOf('### Maze'), prd.indexOf('### Player'));
+    const rows = [...block.matchAll(/^([#.WG]{20}) {2}[0-9]{2}$/gm)].map((m) => m[1]);
+    expect(rows).toHaveLength(12);
+    expect([...MAZE_LAYOUT]).toEqual(rows);
+  });
+
   it('is 20 x 12 with a wall border and the PRD layout outside the bunker', () => {
     const { tiles } = getMaze();
     expect(tiles).toHaveLength(ROWS);

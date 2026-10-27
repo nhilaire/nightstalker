@@ -15,6 +15,19 @@ describe('sanitizeParams', () => {
   });
 });
 
+describe('telemetry before any consent decision (AC-05)', () => {
+  it('sends nothing while consent is unset', () => {
+    jest.isolateModules(() => {
+      const fresh = require('../telemetry/telemetry') as typeof import('../telemetry/telemetry');
+      jest.mocked(logEvent).mockClear();
+      expect(fresh.isTelemetryEnabled()).toBe(false);
+      fresh.track('game_start', { modern: 'on', fire_mode: 'quadrants', controls: 'normal' });
+      fresh.reportError(new Error('x'), 'test');
+      expect(logEvent).not.toHaveBeenCalled();
+    });
+  });
+});
+
 describe('telemetry consent', () => {
   beforeEach(() => jest.clearAllMocks());
 
