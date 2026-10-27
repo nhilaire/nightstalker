@@ -8,6 +8,7 @@ import { ConsentScreen } from './screens/ConsentScreen';
 import { GameScreen } from './screens/GameScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { DEFAULT_SETTINGS } from './storage/settings';
 import { loadBestScore, saveBestScore } from './storage/bestScore';
 import { loadLanguageSetting, saveLanguageSetting } from './storage/languageSetting';
 import { Consent, loadConsent, saveConsent } from './telemetry/consentStore';
@@ -66,7 +67,7 @@ export default function App() {
   } else if (consent === 'unknown') {
     content = <ConsentScreen onDecision={decide} />;
   } else if (route === 'game') {
-    content = <GameScreen onExit={() => setRoute('home')} onGameOver={onGameOver} />;
+    content = <GameScreen settings={DEFAULT_SETTINGS} highScore={bestScore} onGameOver={(r) => { onGameOver(r.score); setRoute('home'); }} />;
   } else if (route === 'about') {
     content = <AboutScreen onBack={() => setRoute('home')} />;
   } else if (route === 'settings') {
