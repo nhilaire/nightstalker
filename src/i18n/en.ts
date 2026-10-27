@@ -1,57 +1,158 @@
 // English translation of fr.ts (same keys, enforced by the Strings type). English typography: no space before
 // ": ! ?", comma as thousands separator.
-import { formatter } from './format';
+import { decimal } from './format';
 import type { Strings } from './types';
 
-const { label } = formatter('en-US');
+const n = decimal('en-US');
 
 export const en: Strings = {
   consent: {
     title: 'Your privacy',
     body:
-      'We would like to measure how the game is used, anonymously, and detect crashes in order to improve it. ' +
+      'I would like to measure how the game is used, anonymously, and detect crashes to improve it. ' +
       'No personal data is collected and nothing is used for advertising.',
     accept: 'Accept',
     refuse: 'Decline',
     footnote: 'You can change your mind at any time in the settings.',
   },
   home: {
+    title: 'NIGHTSTALKER',
+    tagline: 'Survive the maze. Count your bullets.',
     play: 'Play',
     settings: 'Settings',
+    guide: 'Guide',
     about: 'About',
-    bestScore: (score: number) => label('Best score', score),
+    bestScore: 'Best score',
+    hintMove: 'Move',
+    hintFire: 'Fire',
+    hintLeft: '← Left',
+    hintRight: 'Right →',
+    footer: 'A tribute to the maze shooters of the early 80s',
   },
   game: {
-    tap: 'Tap!',
-    score: (score: number) => label('Score', score),
-    timeLeft: (seconds: number) => label('Time', `${seconds} s`),
-    over: 'Game over',
-    finalScore: (score: number) => label('Your score', score),
-    playAgain: 'Play again',
-    home: 'Home',
+    lives: 'LIVES',
+    best: 'BEST',
+    ammo: 'AMMO',
+    noGun: 'NO GUN',
+    lifeBonus: '+1 LIFE',
+    combo: (mult: number) => `COMBO ×${n(mult)}`,
+    pause: 'Pause',
   },
-  about: {
-    title: 'About',
-    storyTitle: 'The story of this game',
-    story: ['A small home-made game, with no ads and no account.'],
-    authorTitle: 'A word from the author',
-    author: [
-      "This game does not come from a studio: it was imagined and programmed in my free time, by a passionate developer, without pretension.",
-      'So it is far from perfect and probably not free of bugs. If something does not work as expected, thank you in advance for your patience.',
-    ],
-    dataTitle: 'Your data',
-    data: [
-      'No account, no ads. Anonymous statistics are only sent if you agreed, and you can change your mind in the settings.',
-    ],
-    version: (version: string) => `Version ${version}`,
-    back: 'Back',
+  pause: {
+    title: 'PAUSED',
+    resume: 'Resume',
+    quit: 'Quit',
+  },
+  gameover: {
+    title: 'GAME OVER',
+    newBest: 'NEW HIGH SCORE!',
+    topScores: 'TOP SCORES',
+    replay: 'Replay',
+    menu: 'Menu',
+  },
+  bonus: {
+    doubleKill: 'DOUBLE KILL',
+    tripleKill: 'TRIPLE KILL',
+    megaKill: 'MEGA KILL',
+    quickDraw: 'QUICK DRAW',
+    clutch: 'CLUTCH',
+    fullClip: 'FULL CLIP',
+    noBunker: 'NO-BUNKER RUN',
+    shieldAbsorb: 'SHIELD ABSORB',
+  },
+  curse: {
+    slow: 'CURSED: SLOW',
+    noAmmo: 'CURSED: NO AMMO',
+    volley: 'CURSED: VOLLEY',
   },
   settings: {
     title: 'Settings',
+    swap: 'Swap controls',
+    swapOff: 'Joystick: LEFT · Fire: RIGHT',
+    swapOn: 'Joystick: RIGHT · Fire: LEFT',
+    fireMode: 'Fire mode',
+    fire: {
+      quadrants: { label: 'QUADRANTS', hint: 'Tap a quarter of the fire circle to shoot up, down, left or right' },
+      dpad: { label: 'D-PAD', hint: 'Four buttons in a cross, one per direction' },
+      autoaim: { label: 'AUTO-AIM', hint: 'One button: the shot targets the nearest enemy' },
+      pointAndShoot: { label: 'POINT & SHOOT', hint: 'Tap anywhere on that side: the bullet flies toward your finger' },
+    },
+    modern: 'Modern mode',
+    modernOn: 'Power-ups, combos and multipliers on',
+    modernOff: 'Classic mode: base rules only',
+    modernNext: 'Applies to the next run.',
+    sound: 'Sound effects',
+    soundHint: 'Explosions, gun, power-ups',
+    ambience: 'Ambience',
+    ambienceHint: 'Heartbeat that speeds up with the difficulty',
+    haptics: 'Vibrations',
+    hapticsHint: 'On shots, hits and death',
     telemetry: 'Share anonymous statistics',
     telemetryHelp: 'Helps fix bugs and improve the game. No personal data is sent.',
     language: 'Language',
     languageAuto: 'Automatic (phone language)',
+    back: 'Back',
+  },
+  guide: {
+    title: 'POWER-UPS',
+    lead: 'In modern mode, a power-up appears on the map about every 20 to 40 seconds. It blinks before it vanishes. Walk over it to use it.',
+    duration: (seconds: number) => `${seconds} s`,
+    charges: (count: number) => `${count} charge${count > 1 ? 's' : ''}`,
+    groups: {
+      tempo: { title: 'TEMPO', hint: 'Slow down the enemy clock' },
+      offense: { title: 'OFFENSIVE', hint: 'Change your next shots; they use up charges' },
+      defense: { title: 'DEFENSIVE', hint: 'Take a hit, walk through walls, distract' },
+      economy: { title: 'ECONOMY', hint: 'Score, ammo, lives' },
+      info: { title: 'INFORMATION', hint: 'Stop enemy fire and reveal what you cannot see' },
+      mystery: { title: 'MYSTERY', hint: 'Random buff or curse, always a buff early in the run' },
+    },
+    back: 'Back',
+  },
+  powerups: {
+    slowMo: { label: 'SLOW', description: 'Enemies at 50% for 25 s' },
+    freeze: { label: 'FREEZE', description: 'Enemies frozen for 4 s' },
+    cloak: { label: 'CLOAK', description: 'Robots stop tracking you for 8 s' },
+    rapidFire: { label: 'RAPID', description: 'No bullet limit for 6 s' },
+    piercing: { label: 'PIERCE', description: 'Next shot ignores shields' },
+    spread: { label: 'SPREAD', description: 'Next shot fires 3 ways' },
+    heavy: { label: 'HEAVY', description: 'Next 3 shots kill in one hit' },
+    boomerang: { label: 'BOOM', description: 'Next shot comes back' },
+    shield: { label: 'SHIELD', description: 'Absorbs one hit' },
+    bunkerRepair: { label: 'REPAIR', description: 'Bunker restored' },
+    phaseWalk: { label: 'PHASE', description: 'Walk through walls for 4 s' },
+    decoy: { label: 'DECOY', description: 'A decoy draws fire for 8 s' },
+    scoreX2: { label: 'X2', description: 'Double points for 30 s' },
+    ammo: { label: 'AMMO', description: 'Full ammo' },
+    magnet: { label: 'MAGNET', description: 'The gun appears near you' },
+    extraLife: { label: '+1', description: 'One extra life' },
+    emp: { label: 'EMP', description: 'Resets enemy fire' },
+    xray: { label: 'X-RAY', description: 'Reveals invisibles and lines of fire for 12 s' },
+    mystery: { label: '?', description: 'Random buff or curse' },
+  },
+  about: {
+    title: 'About',
+    storyTitle: 'The story of this game',
+    story: [
+      'As a child, I discovered Night Stalker on the Intellivision console: a few bullets, robots closing in and a bunker as the only refuge. ' +
+        'That tension never left me. Years later, I created this game to find it again on my phone and share it.',
+    ],
+    howToTitle: 'How to play',
+    howTo: [
+      'Survive in the maze. Pick up the gun (6 bullets) and shoot the robots. Avoid the bats and the spider: they paralyse you. ' +
+        'The bunker is your refuge. Every 10,000 points gives you an extra life. In modern mode, power-ups appear and chained shots earn bonuses.',
+    ],
+    inspirationTitle: 'Inspiration',
+    inspiration: [
+      'Inspired by Night Stalker (Mattel, Intellivision, 1982). This game is neither a copy nor an official product: maze, graphics, sounds and rules are original.',
+    ],
+    authorTitle: 'A word from the author',
+    author: [
+      'This game does not come from a studio: it was designed and programmed in my free time by a passionate independent developer.',
+      'It surely has rough edges: if something does not work as expected, thank you in advance for your patience.',
+    ],
+    dataTitle: 'Your data',
+    data: ['No account, no ads. Anonymous statistics are sent only if you agreed, and you can change your mind in the settings.'],
+    version: (version: string) => `Version ${version}`,
     back: 'Back',
   },
   errors: {

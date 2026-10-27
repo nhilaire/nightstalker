@@ -16,7 +16,7 @@ export function HomeScreen({ bestScore, onPlay, onSettings, onAbout }: Props) {
         <Text style={styles.title} accessibilityRole="header">
           {appName(language)}
         </Text>
-        {bestScore > 0 && <Text style={styles.best}>{t.home.bestScore(bestScore)}</Text>}
+        <Text style={styles.best}>{`${t.home.bestScore} ${String(bestScore).padStart(6, '0')}`}</Text>
       </View>
       <Button label={t.home.play} onPress={onPlay} testID="home-play" />
       <Button label={t.home.settings} onPress={onSettings} variant="secondary" testID="home-settings" />
