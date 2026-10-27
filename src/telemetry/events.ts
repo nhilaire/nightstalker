@@ -1,9 +1,21 @@
 // Typed catalog of the only telemetry events this app may send (must match docs/PRD.md "Telemetry events").
 // Params are numbers or short lowercase enums. Never identifiers, names, free text or locations.
 
+export type OnOff = 'on' | 'off';
+export type FireModeParam = 'quadrants' | 'dpad' | 'autoaim' | 'point';
+export type PowerUpKindParam =
+  | 'slow_mo' | 'freeze' | 'cloak' | 'rapid_fire' | 'piercing' | 'spread' | 'heavy' | 'boomerang' | 'shield'
+  | 'bunker_repair' | 'phase_walk' | 'decoy' | 'score_x2' | 'ammo' | 'magnet' | 'extra_life' | 'emp' | 'xray'
+  | 'mystery';
+export type SettingParam = 'swap' | 'fire_mode' | 'modern' | 'sound' | 'ambience' | 'haptics' | 'language' | 'telemetry';
+export type SettingValueParam = OnOff | FireModeParam | 'auto' | 'fr' | 'en';
+
 export type TelemetryEvents = {
-  game_start: { level: number };
-  game_over: { level: number; score: number; duration_s: number };
+  game_start: { modern: OnOff; fire_mode: FireModeParam; controls: 'normal' | 'swapped' };
+  tier_reached: { tier: 1 | 2 | 3 | 4 | 5; duration_s: number };
+  powerup_pickup: { kind: PowerUpKindParam };
+  game_over: { score: number; tier: 0 | 1 | 2 | 3 | 4 | 5; duration_s: number; modern: OnOff; reason: 'lives' | 'quit' };
+  settings_change: { setting: SettingParam; value: SettingValueParam };
 };
 
 export type EventName = keyof TelemetryEvents;

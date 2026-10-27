@@ -21,7 +21,7 @@ export function GameScreen({ onExit, onGameOver }: Props) {
     const t = Date.now();
     dispatch({ type: 'start', now: t });
     setNow(t);
-    track('game_start', { level: 1 });
+    track('game_start', { modern: 'on', fire_mode: 'quadrants', controls: 'normal' });
   };
 
   useEffect(start, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -39,7 +39,7 @@ export function GameScreen({ onExit, onGameOver }: Props) {
   useEffect(() => {
     if (state.status !== 'over' || reported.current) return;
     reported.current = true;
-    track('game_over', { level: state.level, score: state.score, duration_s: durationSeconds(state) });
+    track('game_over', { score: state.score, tier: 0, duration_s: durationSeconds(state), modern: 'on', reason: 'lives' });
     onGameOver(state.score);
   }, [state, onGameOver]);
 
