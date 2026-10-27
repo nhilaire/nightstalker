@@ -352,7 +352,7 @@ Business and technical indicators followed in Firebase (free Spark plan). Detail
 ## Non-functional requirements
 
 - Performance: smooth on a mid-range Android phone (no visible jank during play), cold start < 3 s.
-- APK size (arm64): target < 40 MB.
+- APK size (arm64): target < 50 MB. (Amended 2026-10-27 with the user: the first signed arm64 build is 49.9 MB, Skia and Firebase native libraries dominate; was < 40 MB.)
 - Works fully offline. No account. No ads. No backend.
 - Android only, landscape locked, full screen; minSdk from the stack defaults.
 - Privacy: opt-in telemetry, no personal data, AD_ID permission removed.
