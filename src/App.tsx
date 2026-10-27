@@ -15,7 +15,9 @@ import { addHighScore, loadHighScores } from './storage/highScores';
 import { loadLanguageSetting, saveLanguageSetting } from './storage/languageSetting';
 import { DEFAULT_SETTINGS, GameSettings, loadSettings, saveSettings } from './storage/settings';
 import { Consent, loadConsent, saveConsent } from './telemetry/consentStore';
-import { applyConsent } from './telemetry/telemetry';
+import { frameEvents, gameOverParams, gameStartParams, languageChange, settingsChanges, trackAll } from './telemetry/gameTelemetry';
+import { applyConsent, track } from './telemetry/telemetry';
+import type { GameEvent, GameState } from './game/types';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import { colors } from './ui/theme';
 
@@ -59,22 +61,41 @@ export default function App() {
     setConsentState(value);
   }, []);
 
+  const toggleTelemetry = useCallback(
+    async (granted: boolean) => {
+      await decide(granted);
+      if (granted) track('settings_change', { setting: 'telemetry', value: 'on' });
+    },
+    [decide],
+  );
+
   const changeLanguage = useCallback(async (value: LanguageSetting) => {
+    track('settings_change', languageChange(value));
     setLanguageSetting(value);
     await saveLanguageSetting(value);
   }, []);
 
-  const changeSettings = useCallback(async (next: GameSettings) => {
-    setSettings(next);
-    await saveSettings(next);
-  }, []);
+  const changeSettings = useCallback(
+    async (next: GameSettings) => {
+      for (const change of settingsChanges(settings, next)) track('settings_change', change);
+      setSettings(next);
+      await saveSettings(next);
+    },
+    [settings],
+  );
 
   const play = useCallback(() => {
+    track('game_start', gameStartParams(settings));
     setRunId((id) => id + 1);
     setRoute('game');
+  }, [settings]);
+
+  const onEvents = useCallback((events: GameEvent[], state: GameState) => {
+    trackAll(frameEvents(events, state.elapsed));
   }, []);
 
   const onGameOver = useCallback(async (result: RunResult) => {
+    track('game_over', gameOverParams(result));
     setLastRun(result);
     setRoute('gameover');
     setScores(await addHighScore(result.score));
@@ -92,12 +113,12 @@ export default function App() {
   } else if (consent === 'unknown') {
     content = <ConsentScreen onDecision={decide} />;
   } else if (route === 'game') {
-    content = <GameScreen key={runId} settings={settings} highScore={bestOf(scores)} onGameOver={onGameOver} />;
+    content = <GameScreen key={runId} settings={settings} highScore={bestOf(scores)} onGameOver={onGameOver} onEvents={onEvents} />;
   } else if (route === 'gameover' && lastRun) {
     content = <GameOverScreen score={lastRun.score} newBest={lastRun.newBest} scores={scores} onReplay={play} onMenu={home} />;
   } else if (route === 'settings') {
     content = (
-      <SettingsScreen settings={settings} onChange={changeSettings} telemetryEnabled={consent === 'granted'} onToggleTelemetry={decide} onBack={home} />
+      <SettingsScreen settings={settings} onChange={changeSettings} telemetryEnabled={consent === 'granted'} onToggleTelemetry={toggleTelemetry} onBack={home} />
     );
   } else if (route === 'guide') {
     content = <GuideScreen onBack={home} />;
