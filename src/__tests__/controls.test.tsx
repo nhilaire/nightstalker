@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { FireZone } from '../controls/FireZone';
-import { controlSides, directionOf, joystickVector } from '../game/controls';
+import { controlSides, directionOf, joystickVector, pointDirection, quadrantDirection } from '../game/controls';
 
 describe('touch controls (AC-14, AC-39)', () => {
   it('turns the finger offset into a clamped knob and a normalised vector with a dead zone', () => {
@@ -18,6 +18,21 @@ describe('touch controls (AC-14, AC-39)', () => {
     expect(directionOf(2, 9)).toBe('S');
     expect(directionOf(2, -9)).toBe('N');
     expect(directionOf(5, 5)).toBe('E');
+  });
+
+  it('fires the quadrant tapped in the 110 px circle (AC-14)', () => {
+    expect(quadrantDirection(55, 5, 110)).toBe('N');
+    expect(quadrantDirection(55, 105, 110)).toBe('S');
+    expect(quadrantDirection(105, 50, 110)).toBe('E');
+    expect(quadrantDirection(5, 60, 110)).toBe('W');
+  });
+
+  it('fires from the player towards the tap in point-and-shoot (AC-14)', () => {
+    const player = { x: 400, y: 200 };
+    expect(pointDirection({ x: 700, y: 260 }, player)).toBe('E');
+    expect(pointDirection({ x: 100, y: 150 }, player)).toBe('W');
+    expect(pointDirection({ x: 420, y: 20 }, player)).toBe('N');
+    expect(pointDirection({ x: 380, y: 330 }, player)).toBe('S');
   });
 
   it('puts the joystick left and the fire zone right, swapped on demand', () => {

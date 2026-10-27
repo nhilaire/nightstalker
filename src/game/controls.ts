@@ -25,6 +25,16 @@ export function directionOf(dx: number, dy: number): CardinalDir {
   return dy > 0 ? 'S' : 'N';
 }
 
+// Quadrant circle of the given size: tap position inside it -> direction from its centre.
+export function quadrantDirection(x: number, y: number, size: number): CardinalDir {
+  return directionOf(x - size / 2, y - size / 2);
+}
+
+// Point-and-shoot: from the player (on screen) towards the tap.
+export function pointDirection(tap: { x: number; y: number }, player: { x: number; y: number }): CardinalDir {
+  return directionOf(tap.x - player.x, tap.y - player.y);
+}
+
 export type Side = 'left' | 'right';
 
 export function controlSides(swapControls: boolean): { joystick: Side; fire: Side } {

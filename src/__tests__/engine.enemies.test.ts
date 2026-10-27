@@ -1,4 +1,4 @@
-import { patrolDir, pickDir, tickEnemy, trackingDir } from '../game/ai';
+import { hasReactiveShield, patrolDir, pickDir, tickEnemy, trackingDir } from '../game/ai';
 import { ENEMY_HP, ENEMY_SHOOT_CD, ENEMY_SPEED, SCORE, SHIELD_TIME } from '../game/constants';
 import { tick } from '../game/engine';
 import { isInsideBunker } from '../game/maze';
@@ -30,6 +30,26 @@ describe('enemy stats and spawning (AC-16)', () => {
   });
 });
 
+describe('spawning enemies (AC-16)', () => {
+  it('take no damage and do not shoot while spawning', () => {
+    const state = newGame();
+    freezeRoster(state);
+    placePlayer(state, 5, 1);
+    state.player.invulnTimer = 1e9;
+    state.player.hasGun = true;
+    state.player.ammo = 6;
+    const e = placeEnemy(state, 'gray', 8, 1);
+    e.spawning = true;
+    e.spawnTimer = 1.2;
+    e.shootCooldown = 0; // ready to fire and aligned with the player
+    tick(state, DT, input({ fireRequested: true, fireDir: 'E' }), constantRng(0.9));
+    run(state, 0.6);
+    expect(e.hp).toBe(1);
+    expect(state.enemies).toContain(e);
+    expect(state.bullets.filter((b) => b.source === 'enemy')).toHaveLength(0);
+  });
+});
+
 describe('reactive shields (AC-17)', () => {
   function shootAt(state: ReturnType<typeof newGame>, piercing = false) {
     state.bullets = [];
@@ -40,11 +60,11 @@ describe('reactive shields (AC-17)', () => {
     run(state, 0.5);
   }
 
-  it('raises a 2 s shield on a non-lethal hit, ignored by normal bullets, not by piercing ones', () => {
+  it.each(['white', 'black1', 'black2', 'invisible'] as const)('%s raises a 2 s shield on a non-lethal hit, ignored by normal bullets, not by piercing ones', (type) => {
     const state = newGame();
     freezeRoster(state);
     placePlayer(state, 5, 1);
-    const robot = placeEnemy(state, 'white', 10, 1);
+    const robot = placeEnemy(state, type, 10, 1);
     const hold = () => {
       robot.x = 105;
       robot.y = 15;
@@ -65,6 +85,10 @@ describe('reactive shields (AC-17)', () => {
     run(state, SHIELD_TIME + 0.1);
     shootAt(state);
     expect(robot.hp).toBe(0);
+  });
+
+  it('never shields the one-hit types', () => {
+    for (const type of ['spider', 'bat', 'gray', 'blue'] as const) expect(hasReactiveShield(type)).toBe(false);
   });
 });
 

@@ -2,7 +2,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-import { directionOf, Side } from '../game/controls';
+import { pointDirection, quadrantDirection, Side } from '../game/controls';
 import type { CardinalDir, FireMode } from '../game/types';
 
 export type FireFn = (dir: CardinalDir | 'auto') => void;
@@ -32,7 +32,7 @@ function Quadrants({ onFire }: { onFire: FireFn }) {
     .runOnJS(true)
     .maxDuration(99999)
     .shouldCancelWhenOutside(false)
-    .onBegin((e) => onFire(directionOf(e.x - BTN / 2, e.y - BTN / 2)));
+    .onBegin((e) => onFire(quadrantDirection(e.x, e.y, BTN)));
   return (
     <GestureDetector gesture={tap}>
       <View testID="fire-quadrants" style={styles.circle}>
@@ -77,8 +77,7 @@ function PointZone({ onFire, playerOnScreen }: { onFire: FireFn; playerOnScreen:
     .maxDuration(99999)
     .shouldCancelWhenOutside(false)
     .onBegin((e) => {
-      const p = playerOnScreen();
-      onFire(directionOf(e.absoluteX - p.x, e.absoluteY - p.y));
+      onFire(pointDirection({ x: e.absoluteX, y: e.absoluteY }, playerOnScreen()));
     });
   return (
     <GestureDetector gesture={tap}>

@@ -198,8 +198,33 @@ describe('bonuses (AC-30)', () => {
   it('never grants the tier 1 no-bunker bonus: the run starts inside the bunker', () => {
     const state = newGame({ modern: true });
     freezeRoster(state);
+    tick(state, DT, input(), constantRng(0.9)); // the player stands in the bunker at the start
+    placePlayer(state, 5, 1);
+    state.player.invulnTimer = 1e9;
+    addScore(state, 5000); // tier 1
     tick(state, DT, input(), constantRng(0.9));
+    expect(state.combo.currentTier).toBe(1);
+    expect(state.score).toBe(5000);
+  });
+
+  it('cancels the no-bunker bonus of the current tier after a death (respawn in the bunker)', () => {
+    const state = range(true);
+    state.combo.currentTier = 1;
+    state.combo.enteredBunkerThisTier = false;
+    state.player.invulnTimer = 0;
+    placeEnemy(state, 'gray', 5, 1); // robot contact: death
+    tick(state, DT, input(), constantRng(0.9));
+    expect(state.lives).toBe(5);
+    state.enemies = [];
+    run(state, 1); // respawn at the spawn point, inside the bunker
     expect(state.combo.enteredBunkerThisTier).toBe(true);
+    state.score = 14900;
+    placePlayer(state, 5, 1);
+    state.player.invulnTimer = 1e9;
+    state.player.hasGun = true;
+    state.player.ammo = 6;
+    killOne(state, 'spider'); // 15,000: tier 2
+    expect(state.score).toBe(15000);
   });
 
   it('doubles kill points and bonuses under score x2', () => {
