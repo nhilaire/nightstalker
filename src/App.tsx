@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { feedbackFor } from './audio/feedback';
+import { Heartbeat, playFeedback } from './audio/player';
+import { HEARTBEAT_TEMPO } from './game/constants';
 import { bestOf, HighScore } from './game/highScores';
 import { LanguageSetting } from './i18n';
 import { I18nProvider } from './i18n/I18nProvider';
@@ -90,9 +93,26 @@ export default function App() {
     setRoute('game');
   }, [settings]);
 
-  const onEvents = useCallback((events: GameEvent[], state: GameState) => {
-    trackAll(frameEvents(events, state.elapsed));
-  }, []);
+  // Ambience: one heartbeat loop per run, paused with the run, faster with each main robot (D1: its own switch).
+  const heartbeat = useRef<Heartbeat | null>(null);
+  useEffect(() => {
+    if (route !== 'game') return;
+    const hb = new Heartbeat(settings.ambience);
+    hb.start(HEARTBEAT_TEMPO.gray);
+    heartbeat.current = hb;
+    return () => hb.stop();
+  }, [route, runId, settings.ambience]);
+
+  const onEvents = useCallback(
+    (events: GameEvent[], state: GameState) => {
+      playFeedback(feedbackFor(events, settings));
+      for (const e of events) if (e.type === 'tempo') heartbeat.current?.setTempo(e.seconds);
+      trackAll(frameEvents(events, state.elapsed));
+    },
+    [settings],
+  );
+
+  const onPauseChange = useCallback((paused: boolean) => heartbeat.current?.setPaused(paused), []);
 
   const onGameOver = useCallback(async (result: RunResult) => {
     track('game_over', gameOverParams(result));
@@ -113,7 +133,7 @@ export default function App() {
   } else if (consent === 'unknown') {
     content = <ConsentScreen onDecision={decide} />;
   } else if (route === 'game') {
-    content = <GameScreen key={runId} settings={settings} highScore={bestOf(scores)} onGameOver={onGameOver} onEvents={onEvents} />;
+    content = <GameScreen key={runId} settings={settings} highScore={bestOf(scores)} onGameOver={onGameOver} onEvents={onEvents} onPauseChange={onPauseChange} />;
   } else if (route === 'gameover' && lastRun) {
     content = <GameOverScreen score={lastRun.score} newBest={lastRun.newBest} scores={scores} onReplay={play} onMenu={home} />;
   } else if (route === 'settings') {
