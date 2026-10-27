@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { durationSeconds, initialState, reduce, remainingSeconds } from '../game/engine';
+import { durationSeconds, initialState, reduce, remainingSeconds } from '../game/placeholderEngine';
 import { useI18n } from '../i18n/I18nProvider';
 import { track } from '../telemetry/telemetry';
 import { Button } from '../ui/Button';
