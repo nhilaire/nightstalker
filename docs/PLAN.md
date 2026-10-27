@@ -11,7 +11,7 @@ Format: `- [ ] T-01 Title (AC-01, AC-02) - proof: unit|e2e|device`. Check the bo
 - [x] T-04 Enemies: stats, spawning phase, reactive shields, movement AI, stuck detection (AC-16, AC-17, AC-21) - proof: unit
 - [x] T-05 Enemy fire: one enemy bullet, line of sight, cooldowns, yellow bolts on the bunker, laser variant, friendly fire without points (AC-18, AC-19, AC-20) - proof: unit
 - [x] T-06 Player hits, paralysis, death, respawn and game over (AC-22, AC-23, AC-24) - proof: unit
-- [ ] T-07 Roster by tier, main carry-over, bat conversion, spawn positions, heartbeat tempo (AC-25, AC-26, AC-27, AC-34) - proof: unit
+- [x] T-07 Roster by tier, main carry-over, bat conversion, spawn positions, heartbeat tempo (AC-25, AC-26, AC-27, AC-34) - proof: unit
 - [ ] T-08 Scoring, life bonus, new best, combos and bonuses with D5 clutch (AC-28, AC-29, AC-30) - proof: unit
 - [ ] T-09 Power-ups: spawn timing and placement, the 19 effects, mystery buffs and curses, HUD label without points (AC-31, AC-32, AC-33) - proof: unit
 - [ ] T-10 Storage: top-10 scores (stable, 0-score runs, quit runs) and game settings (AC-36) - proof: unit
