@@ -14,6 +14,7 @@ import { Rng } from '../game/rng';
 import { tierForScore } from '../game/spawn';
 import type { CardinalDir, GameEvent, GameState } from '../game/types';
 import { useI18n } from '../i18n/I18nProvider';
+import { FrameStats } from '../render/frameStats';
 import { drawScene, fitView } from '../render/scene';
 import type { GameSettings } from '../storage/settings';
 import { Button } from '../ui/Button';
@@ -83,11 +84,15 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
   useEffect(() => {
     let raf = 0;
     let last: number | null = null;
+    const stats = new FrameStats();
     const step = (now: number) => {
       const state = stateRef.current!;
-      const dt = last === null ? 0 : Math.min((now - last) / 1000, MAX_DT);
+      const frameMs = last === null ? 0 : now - last;
+      const dt = Math.min(frameMs / 1000, MAX_DT);
       last = now;
       if (!pausedRef.current && state.phase === 'playing' && dt > 0) {
+        const line = stats.record(frameMs);
+        if (line) console.log(line);
         tick(state, dt, inputRef.current, rng);
         inputRef.current.fireRequested = false;
         inputRef.current.fireDir = null;

@@ -23,7 +23,7 @@ Format: `- [ ] T-01 Title (AC-01, AC-02) - proof: unit|e2e|device`. Check the bo
 - [x] T-16 Telemetry calls: game_start, tier_reached, powerup_pickup, game_over, settings_change (AC-05, AC-06) - proof: unit
 - [x] T-17 Sound: generated WAVs with header tests, feedback policy honouring sound/ambience/vibrations, heartbeat loop (AC-40, AC-47) - proof: unit
 - [x] T-18 Maestro flows with readme captures: consent, play/pause/quit, settings persistence, swap, guide, about, language, telemetry (AC-01, AC-03, AC-06, AC-35, AC-37, AC-38, AC-39, AC-43, AC-44) - proof: e2e
-- [ ] T-19 Device proofs prepared: launcher names per language, cold start, frame-stats and sound-load log lines, feel check list (AC-04, AC-45, AC-46, AC-47, AC-48) - proof: device
+- [x] T-19 Device proofs prepared: launcher names per language, cold start, frame-stats and sound-load log lines, feel check list (AC-04, AC-45, AC-46, AC-47, AC-48) - proof: device
 
 ## Notes
 
