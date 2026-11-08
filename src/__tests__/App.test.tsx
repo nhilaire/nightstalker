@@ -11,6 +11,7 @@ describe('App', () => {
     await AsyncStorage.clear();
     jest.mocked(deviceLanguageTags).mockReturnValue(['fr-FR']);
   });
+  afterEach(() => jest.restoreAllMocks());
 
   it('asks for consent in French on a French phone, then shows the home screen', async () => {
     await render(<App />);
@@ -74,5 +75,23 @@ describe('App', () => {
     await render(<App />);
     expect(await screen.findByText('Jouer')).toBeTruthy();
     expect(screen.queryByText('Ta vie privée')).toBeNull();
+  });
+
+  // AC-01: after either choice Home is shown, even when the choice cannot be saved or applied.
+  it('leaves the consent screen when the consent write fails', async () => {
+    await render(<App />);
+    expect(await screen.findByText('Ta vie privée')).toBeTruthy();
+    jest.spyOn(AsyncStorage, 'setItem').mockRejectedValueOnce(new Error('disk full'));
+    await fireEvent.press(screen.getByText('Accepter'));
+    expect(await screen.findByText('Jouer')).toBeTruthy();
+  });
+
+  it('leaves the consent screen when applying the consent throws', async () => {
+    const telemetry = require('../telemetry/telemetry');
+    jest.spyOn(telemetry, 'applyConsent').mockRejectedValueOnce(new Error('firebase down'));
+    await render(<App />);
+    expect(await screen.findByText('Ta vie privée')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Refuser'));
+    expect(await screen.findByText('Jouer')).toBeTruthy();
   });
 });

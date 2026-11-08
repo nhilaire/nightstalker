@@ -1,5 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logEvent, setConsent } from '@react-native-firebase/analytics';
 
+import { saveConsent } from '../telemetry/consentStore';
 import { sanitizeParams } from '../telemetry/events';
 import { applyConsent, track } from '../telemetry/telemetry';
 
@@ -43,5 +45,18 @@ describe('telemetry consent', () => {
     track('game_over', { score: 12, tier: 0, duration_s: 10, modern: 'on', reason: 'lives' });
     expect(logEvent).toHaveBeenCalledWith(expect.anything(), 'game_over', { score: 12, tier: 0, duration_s: 10, modern: 'on', reason: 'lives' });
     expect(setConsent).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ analytics_storage: true, ad_storage: false }));
+  });
+});
+
+describe('consent storage (AC-01)', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('catches and reports a failed consent write, like the other stores', async () => {
+    const telemetry = require('../telemetry/telemetry');
+    const report = jest.spyOn(telemetry, 'reportError').mockImplementation(() => {});
+    const failure = new Error('disk full');
+    jest.spyOn(AsyncStorage, 'setItem').mockRejectedValueOnce(failure);
+    await expect(saveConsent('granted')).resolves.toBeUndefined();
+    expect(report).toHaveBeenCalledWith(failure, 'save_consent');
   });
 });
