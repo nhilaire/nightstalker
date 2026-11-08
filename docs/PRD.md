@@ -5,7 +5,7 @@ Project slug: nightstalker
 Final app name: Nightstalker
 Android package: io.github.nhilaire.nightstalker
 Version target: 0.1.0
-Last updated: 2026-10-20
+Last updated: 2026-11-08
 
 > Written in English. Player-facing text is quoted in the "Player copy" section, in every language of the game
 > (`factory-app.json` "languages"; French is the reference).
@@ -277,7 +277,7 @@ points, **D3**). The kind is drawn with these weights:
 | boomerang | 1 | next shot bounces back once on a wall (1 charge) |
 | shield | 2 | absorbs the next death: no life lost, 1.5 s invulnerability (1 charge) |
 | bunkerRepair | 1 | every bunker segment back to 3 HP |
-| phaseWalk | 1 | player walks through walls and the gate (not bunker segments) for 4 s |
+| phaseWalk | 1 | player walks through inner walls for 4 s (not the border, the pen or its gate, nor bunker segments); when the 4 s end inside a wall, the player is moved to the centre of the nearest corridor cell, never the pen (amended 2026-11-08 with the user, v0.1.1) |
 | decoy | 1 | a decoy at the pickup spot draws robots' aim and stops enemy bullets for 8 s |
 | scoreX2 | 3 | all points ×2 for 30 s |
 | ammo | 3 | gun in hand with 6 bullets (the gun on the map is removed) |
