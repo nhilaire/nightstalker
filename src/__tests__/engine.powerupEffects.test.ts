@@ -158,12 +158,53 @@ describe('power-up effects (AC-32)', () => {
     expect(robot.shootCooldown).toBe(1);
   });
 
-  it('phase walk: walls and the gate open, standing bunker segments do not', () => {
+  it('phase walk: inner walls open; the border, the pen, its gate and standing bunker segments do not', () => {
     const state = armed();
     applyPickup(state, 'phaseWalk', constantRng(0.5));
     expect(canPlayerEnter(state, 6, 2)).toBe(true); // wall
-    expect(canPlayerEnter(state, 2, 10)).toBe(true); // gate
+    expect(canPlayerEnter(state, 1, 9)).toBe(true); // wall above the pen
     expect(canPlayerEnter(state, 9, 5)).toBe(false); // bunker segment
+    expect(canPlayerEnter(state, 2, 10)).toBe(false); // gate
+    expect(canPlayerEnter(state, 1, 10)).toBe(false); // pen
+    for (const [c, r] of [[0, 0], [4, 0], [19, 0], [19, 4], [0, 9], [0, 11], [2, 11], [19, 11], [0, 5], [10, 11]]) {
+      expect([c, r, canPlayerEnter(state, c, r)]).toEqual([c, r, false]); // outer border
+    }
+  });
+
+  // Soft-lock found on the device: from an enterable wall cell, a corridor neighbour must always exist once the
+  // phase ends (border cells had none).
+  it('phase walk: every wall cell it opens has a corridor neighbour once it ends', () => {
+    const state = armed();
+    const enterable = (c: number, r: number) => canPlayerEnter(state, c, r);
+    state.buffs.phaseWalkTimer = 4;
+    const opened: [number, number][] = [];
+    for (let r = 0; r < 12; r++) for (let c = 0; c < 20; c++) if (enterable(c, r)) opened.push([c, r]);
+    state.buffs.phaseWalkTimer = 0;
+    const stuck = opened.filter(([c, r]) => !enterable(c, r) && ![[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dc, dr]) => enterable(c + dc, r + dr)));
+    expect(stuck).toEqual([]);
+  });
+
+  it('phase walk ending inside a wall moves the player to the nearest corridor cell centre', () => {
+    const state = armed(6, 2); // (6, 2) is a wall; (6, 1) and (6, 3) are corridors
+    state.buffs.phaseWalkTimer = DT / 2;
+    state.player.y += 2; // a little south of the centre: (6, 3) is the nearest
+    state.player.currentDir = 'S';
+    tick(state, DT, input(), constantRng(0.5));
+    expect(state.buffs.phaseWalkTimer).toBe(0);
+    expect({ x: state.player.x, y: state.player.y }).toEqual(cellCenter(6, 3));
+    expect(state.player.currentDir).toBeNull();
+    // Never into the pen: from the wall above it, the corridor above wins.
+    const other = armed(1, 9);
+    other.buffs.phaseWalkTimer = DT / 2;
+    tick(other, DT, input(), constantRng(0.5));
+    expect({ x: other.player.x, y: other.player.y }).toEqual(cellCenter(1, 8));
+  });
+
+  it('phase walk ending on a corridor does not move the player', () => {
+    const state = armed(5, 1);
+    state.buffs.phaseWalkTimer = DT / 2;
+    tick(state, DT, input(), constantRng(0.5));
+    expect({ x: state.player.x, y: state.player.y }).toEqual(cellCenter(5, 1));
   });
 
   it('magnet: the gun moves to the 3rd closest free cell within 4 cells of the player', () => {

@@ -18,6 +18,8 @@ import {
   MAX_BAT_CONVERSIONS,
   NO_AMMO_FLASH,
   PARTICLE_COLORS,
+  PEN_COL,
+  PEN_ROW,
   PICKUP_FLASH,
   PLAYER_BULLET_SPEED,
   PLAYER_INVULN_AFTER_RESPAWN,
@@ -39,7 +41,7 @@ import {
 } from './constants';
 import { hasReactiveShield, isTrackingType, tickEnemy } from './ai';
 import { bulletHitsBunker, bulletHitsWall, circlesOverlap } from './collisions';
-import { getMaze, isInsideBunker, isWebTile, spawnPoint } from './maze';
+import { cellCenter, getMaze, isInsideBunker, isWebTile, spawnPoint } from './maze';
 import { applyPickup, nextSpawnDelay, spawnPowerUp } from './powerups';
 import { Rng } from './rng';
 import { ensureRoster, mainTypeForScore, pickGunSpawn, tierForScore } from './spawn';
@@ -201,7 +203,10 @@ function updateBuffs(state: GameState, dt: number): void {
   b.freezeTimer = dec(b.freezeTimer);
   b.cloakTimer = dec(b.cloakTimer);
   b.rapidFireTimer = dec(b.rapidFireTimer);
-  b.phaseWalkTimer = dec(b.phaseWalkTimer);
+  if (b.phaseWalkTimer > 0) {
+    b.phaseWalkTimer = dec(b.phaseWalkTimer);
+    if (b.phaseWalkTimer === 0) leaveWall(state);
+  }
   b.xrayTimer = dec(b.xrayTimer);
   b.decoyTimer = dec(b.decoyTimer);
   b.slowDebuffTimer = dec(b.slowDebuffTimer);
@@ -420,10 +425,44 @@ function dirVec(d: CardinalDir): Vec2 {
 
 export function canPlayerEnter(state: GameState, col: number, row: number): boolean {
   const { tiles } = getMaze();
-  if (col < 0 || col >= tiles[0].length || row < 0 || row >= tiles.length) return false;
+  const cols = tiles[0].length;
+  if (col < 0 || col >= cols || row < 0 || row >= tiles.length) return false;
+  const tile = tiles[row][col];
   const phase = state.modernMode && state.buffs.phaseWalkTimer > 0;
-  if (!phase && (tiles[row][col] === '#' || tiles[row][col] === 'G')) return false;
+  if (phase) {
+    // Phase walk opens inner walls only: the border, the pen and its gate have no corridor next to them, so a
+    // player still there when the phase ends would be stuck.
+    const border = col === 0 || col === cols - 1 || row === 0 || row === tiles.length - 1;
+    if (border || tile === 'G' || (col === PEN_COL && row === PEN_ROW)) return false;
+  } else if (tile === '#' || tile === 'G') return false;
   return !state.bunkerSegments.some((s) => s.hp > 0 && s.col === col && s.row === row);
+}
+
+// Safety net when phase walk ends: a player left inside a wall goes to the nearest corridor cell centre (never the
+// pen, which only robots reach).
+function leaveWall(state: GameState): void {
+  const p = state.player;
+  const col = Math.floor(p.x / TILE);
+  const row = Math.floor(p.y / TILE);
+  if (canPlayerEnter(state, col, row) && !(col === PEN_COL && row === PEN_ROW)) return;
+  const { tiles } = getMaze();
+  let best: { x: number; y: number } | null = null;
+  let bestD = Infinity;
+  for (let r = 0; r < tiles.length; r++) {
+    for (let c = 0; c < tiles[0].length; c++) {
+      if ((c === PEN_COL && r === PEN_ROW) || !canPlayerEnter(state, c, r)) continue;
+      const center = cellCenter(c, r);
+      const d = (center.x - p.x) ** 2 + (center.y - p.y) ** 2;
+      if (d < bestD) {
+        bestD = d;
+        best = center;
+      }
+    }
+  }
+  if (!best) return;
+  p.x = best.x;
+  p.y = best.y;
+  p.currentDir = null;
 }
 
 function isSameAxis(a: CardinalDir, b: CardinalDir): boolean {
