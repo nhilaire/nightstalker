@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { appName, APP_VERSION } from '../config/app';
 import { useI18n } from '../i18n/I18nProvider';
 import { Button } from '../ui/Button';
 import { Screen } from '../ui/Screen';
 import { colors, font, spacing } from '../ui/theme';
+import { useBackHandler } from '../ui/useBackHandler';
 
 // « À propos »: why this game exists (story from the discovery brief), how to play, the inspiration notice, a word
 // from the author (a passionate developer, free time), the player's data, the version.
@@ -24,14 +24,11 @@ function Section({ title, paragraphs, testID }: { title: string; paragraphs: rea
 
 export function AboutScreen({ onBack }: { onBack: () => void }) {
   const { t, language } = useI18n();
-  // Android back returns to Home (registered last, so it runs before any app-level handler).
-  useEffect(() => {
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      onBack();
-      return true;
-    });
-    return () => sub.remove();
-  }, [onBack]);
+  // Android back returns to Home.
+  useBackHandler(() => {
+    onBack();
+    return true;
+  });
 
   return (
     <Screen testID="about-screen">

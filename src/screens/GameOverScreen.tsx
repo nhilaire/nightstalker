@@ -7,11 +7,17 @@ import { Button } from '../ui/Button';
 import { pad6 } from '../ui/hudModel';
 import { Screen } from '../ui/Screen';
 import { colors, spacing } from '../ui/theme';
+import { useBackHandler } from '../ui/useBackHandler';
 
 type Props = { score: number; newBest: boolean; scores: readonly HighScore[]; onReplay: () => void; onMenu: () => void };
 
 export function GameOverScreen({ score, newBest, scores, onReplay, onMenu }: Props) {
   const { t } = useI18n();
+  // Android back is « Menu »: Home.
+  useBackHandler(() => {
+    onMenu();
+    return true;
+  });
   return (
     <Screen testID="game-over-screen">
       <View style={styles.columns}>

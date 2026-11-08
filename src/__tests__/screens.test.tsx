@@ -7,6 +7,7 @@ import { POWERUP_KINDS } from '../game/powerups';
 import { DICTIONARIES } from '../i18n';
 import { deviceLanguageTags } from '../i18n/deviceLocale';
 import { addHighScore } from '../storage/highScores';
+import { captureBackHandler } from '../test-utils/backHandler';
 import { tap } from '../test-utils/gestures';
 
 const fr = DICTIONARIES.fr;
@@ -127,5 +128,45 @@ describe('guide and about (AC-43, AC-44)', () => {
     await openApp();
     await fireEvent.press(screen.getByTestId('home-about'));
     expect(screen.getByText(DICTIONARIES.en.about.story[0])).toBeTruthy();
+  });
+});
+
+describe('Android back button (AC-35, AC-38, AC-43, AC-44)', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('goes back to Home from Settings, Guide, About and Game over, and leaves the app from Home', async () => {
+    const { pressBack } = captureBackHandler();
+    await openApp();
+    for (const [button, screenId] of [
+      ['home-settings', 'settings-screen'],
+      ['home-guide', 'guide-screen'],
+      ['home-about', 'about-screen'],
+    ]) {
+      await fireEvent.press(screen.getByTestId(button));
+      expect(await screen.findByTestId(screenId)).toBeTruthy();
+      expect(await pressBack()).toBe(true);
+      expect(await screen.findByTestId('home-screen')).toBeTruthy();
+    }
+    await fireEvent.press(screen.getByTestId('home-play'));
+    expect(await screen.findByTestId('game-screen')).toBeTruthy();
+    await tap('game-pause');
+    await fireEvent.press(screen.getByTestId('pause-quit'));
+    expect(await screen.findByTestId('game-over-screen')).toBeTruthy();
+    expect(await pressBack()).toBe(true);
+    expect(await screen.findByTestId('home-screen')).toBeTruthy();
+    // Home has no handler: the OS default (leave the app) applies.
+    expect(await pressBack()).toBe(false);
+  });
+
+  it('opens the pause overlay during a run, and closes it (resume) when it is open', async () => {
+    const { pressBack } = captureBackHandler();
+    await openApp();
+    await fireEvent.press(screen.getByTestId('home-play'));
+    expect(await screen.findByTestId('game-screen')).toBeTruthy();
+    expect(await pressBack()).toBe(true);
+    expect(screen.getByTestId('pause-overlay')).toBeTruthy();
+    expect(await pressBack()).toBe(true);
+    expect(screen.queryByTestId('pause-overlay')).toBeNull();
+    expect(screen.getByTestId('game-screen')).toBeTruthy();
   });
 });

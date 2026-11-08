@@ -19,6 +19,7 @@ import { drawScene, fitView } from '../render/scene';
 import type { GameSettings } from '../storage/settings';
 import { Button } from '../ui/Button';
 import { Hud } from '../ui/Hud';
+import { useBackHandler } from '../ui/useBackHandler';
 
 export type RunResult = {
   score: number;
@@ -115,6 +116,13 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
     });
     return () => sub.remove();
   }, [setPause]);
+
+  // Android back never leaves a run: it opens the pause overlay, and closes it (resume) when it is open, like a
+  // dialog. Quitting stays an explicit « Quitter ».
+  useBackHandler(() => {
+    if (stateRef.current!.phase === 'playing') setPause(!pausedRef.current);
+    return true;
+  });
 
   const onJoystick = useCallback((x: number, y: number) => {
     inputRef.current.dir = { x, y };

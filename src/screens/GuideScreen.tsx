@@ -6,9 +6,15 @@ import { useI18n } from '../i18n/I18nProvider';
 import { Button } from '../ui/Button';
 import { Screen } from '../ui/Screen';
 import { colors, font, spacing } from '../ui/theme';
+import { useBackHandler } from '../ui/useBackHandler';
 
 export function GuideScreen({ onBack }: { onBack: () => void }) {
   const { t } = useI18n();
+  // Android back returns to Home.
+  useBackHandler(() => {
+    onBack();
+    return true;
+  });
   return (
     <Screen testID="guide-screen">
       <Text style={styles.title} accessibilityRole="header">

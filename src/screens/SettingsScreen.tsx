@@ -10,6 +10,7 @@ import type { GameSettings } from '../storage/settings';
 import { Button } from '../ui/Button';
 import { Screen } from '../ui/Screen';
 import { colors, font, spacing } from '../ui/theme';
+import { useBackHandler } from '../ui/useBackHandler';
 
 type Props = {
   settings: GameSettings;
@@ -60,6 +61,11 @@ function Choice({ label, selected, onPress, testID }: { label: string; selected:
 
 export function SettingsScreen({ settings, onChange, telemetryEnabled, onToggleTelemetry, onBack }: Props) {
   const { t, setting, setSetting } = useI18n();
+  // Android back returns to Home (every change is already saved).
+  useBackHandler(() => {
+    onBack();
+    return true;
+  });
   const set = (patch: Partial<GameSettings>) => onChange({ ...settings, ...patch });
   const languages: { value: LanguageSetting; label: string }[] = [
     { value: 'auto', label: t.settings.languageAuto },
