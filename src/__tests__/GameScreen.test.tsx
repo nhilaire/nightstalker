@@ -8,6 +8,7 @@ import { DICTIONARIES } from '../i18n';
 import { I18nProvider } from '../i18n/I18nProvider';
 import { GameScreen, RunResult } from '../screens/GameScreen';
 import { DEFAULT_SETTINGS } from '../storage/settings';
+import { tap } from '../test-utils/gestures';
 import { activeBuffs, flashText, pad6 } from '../ui/hudModel';
 
 async function renderGame(props: Partial<Parameters<typeof GameScreen>[0]> = {}) {
@@ -32,12 +33,13 @@ describe('game screen (AC-35, AC-41, AC-42)', () => {
 
   it('pauses, resumes and quits: the run ends with reason quit', async () => {
     const { onGameOver } = await renderGame();
-    await fireEvent.press(screen.getByTestId('game-pause'));
+    expect(screen.getByTestId('game-pause').props.accessibilityLabel).toBe('Pause');
+    await tap('game-pause');
     expect(screen.getByTestId('pause-overlay')).toBeTruthy();
     expect(screen.getByText('Reprendre')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('pause-resume'));
     expect(screen.queryByTestId('pause-overlay')).toBeNull();
-    await fireEvent.press(screen.getByTestId('game-pause'));
+    await tap('game-pause');
     await fireEvent.press(screen.getByTestId('pause-quit'));
     expect(onGameOver).toHaveBeenCalledTimes(1);
     expect(onGameOver.mock.calls[0][0]).toMatchObject({ score: 0, newBest: false, reason: 'quit', tier: 0, modern: true });

@@ -24,7 +24,7 @@ Format: `- [ ] T-01 Title (AC-01, AC-02) - proof: unit|e2e|device`. Check the bo
 - [x] T-17 Sound: generated WAVs with header tests, feedback policy honouring sound/ambience/vibrations, heartbeat loop (AC-40, AC-47) - proof: unit
 - [x] T-18 Maestro flows with readme captures: consent, play/pause/quit, settings persistence, swap, guide, about, language, telemetry (AC-01, AC-03, AC-06, AC-35, AC-38, AC-39, AC-43, AC-44) - proof: e2e
 - [x] T-19 Device proofs prepared: launcher names per language, cold start, frame-stats and sound-load log lines, feel check list (AC-04, AC-45, AC-46, AC-47, AC-48) - proof: device
-- [ ] T-20 v0.1.1: fire and pause buttons work while the joystick is held (RNGH taps instead of Pressable) (AC-14, AC-35, AC-48) - proof: unit
+- [x] T-20 v0.1.1: fire and pause buttons work while the joystick is held (RNGH taps instead of Pressable) (AC-14, AC-35, AC-48) - proof: unit
 - [ ] T-21 v0.1.1: phase walk never leaves the player stuck in a wall (no border, no pen/gate, safe exit when it ends) (AC-32, AC-10) - proof: unit
 - [ ] T-22 v0.1.1: hardware back opens/closes the pause overlay in a run and returns Home from Settings, Guide and Game over (AC-35, AC-38, AC-43) - proof: unit
 - [ ] T-23 v0.1.1: a failed consent write is caught and reported, the app still leaves the consent screen (AC-01, AC-05) - proof: unit

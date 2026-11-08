@@ -1,9 +1,10 @@
 // Fire controls, four modes (ported from the prototype). No text: arrows and a crosshair only.
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { pointDirection, quadrantDirection, Side } from '../game/controls';
 import type { CardinalDir, FireMode } from '../game/types';
+import { TapButton } from './TapButton';
 
 export type FireFn = (dir: CardinalDir | 'auto') => void;
 
@@ -49,9 +50,9 @@ function Quadrants({ onFire }: { onFire: FireFn }) {
 
 function Dpad({ onFire }: { onFire: FireFn }) {
   const button = (dir: CardinalDir, label: string, style: object) => (
-    <Pressable key={dir} testID={`fire-${dir}`} onPressIn={() => onFire(dir)} style={({ pressed }) => [styles.dBtn, style, pressed && styles.dBtnPressed]}>
+    <TapButton key={dir} testID={`fire-${dir}`} onPressIn={() => onFire(dir)} style={(pressed) => [styles.dBtn, style, pressed && styles.dBtnPressed]}>
       <Text style={styles.dBtnText}>{label}</Text>
-    </Pressable>
+    </TapButton>
   );
   return (
     <View style={styles.dpad}>
@@ -65,9 +66,9 @@ function Dpad({ onFire }: { onFire: FireFn }) {
 
 function AutoAim({ onFire }: { onFire: FireFn }) {
   return (
-    <Pressable testID="fire-auto" onPressIn={() => onFire('auto')} style={({ pressed }) => [styles.circle, styles.auto, pressed && styles.autoPressed]}>
+    <TapButton testID="fire-auto" onPressIn={() => onFire('auto')} style={(pressed) => [styles.circle, styles.auto, pressed && styles.autoPressed]}>
       <Text style={styles.autoGlyph}>⌖</Text>
-    </Pressable>
+    </TapButton>
   );
 }
 

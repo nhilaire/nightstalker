@@ -1,7 +1,10 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
+import { getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
 
 import { FireZone } from '../controls/FireZone';
 import { controlSides, directionOf, joystickVector, pointDirection, quadrantDirection } from '../game/controls';
+import { tap, touchDown } from '../test-utils/gestures';
 
 describe('touch controls (AC-14, AC-39)', () => {
   it('turns the finger offset into a clamped knob and a normalised vector with a dead zone', () => {
@@ -40,16 +43,44 @@ describe('touch controls (AC-14, AC-39)', () => {
     expect(controlSides(true)).toEqual({ joystick: 'right', fire: 'left' });
   });
 
-  it('fires the pressed direction with the d-pad and "auto" with the auto-aim button', async () => {
+  it('fires the pressed direction with the d-pad and "auto" with the auto-aim button, on touch-down', async () => {
     const onFire = jest.fn();
     const player = () => ({ x: 0, y: 0 });
     await render(<FireZone mode="dpad" side="right" onFire={onFire} playerOnScreen={player} />);
-    await fireEvent(screen.getByTestId('fire-S'), 'pressIn');
+    await touchDown('fire-S');
     expect(onFire).toHaveBeenLastCalledWith('S');
+    await touchDown('fire-N');
+    expect(onFire).toHaveBeenLastCalledWith('N');
     await screen.unmount();
+    onFire.mockClear();
     await render(<FireZone mode="autoaim" side="left" onFire={onFire} playerOnScreen={player} />);
-    await fireEvent(screen.getByTestId('fire-auto'), 'pressIn');
+    await touchDown('fire-auto');
+    expect(onFire).toHaveBeenCalledTimes(1);
     expect(onFire).toHaveBeenLastCalledWith('auto');
+    // Lifting the finger does not fire a second shot.
+    await tap('fire-auto');
+    expect(onFire).toHaveBeenCalledTimes(2);
+  });
+
+  // Pressable never gets a second finger once the joystick's RNGH pan holds the first one: the fire buttons are
+  // RNGH taps (like the quadrants) so that firing works while moving.
+  it('builds every fire button on Gesture Handler, not on Pressable, keeping testIDs and the pressed look', async () => {
+    const player = () => ({ x: 0, y: 0 });
+    await render(<FireZone mode="dpad" side="right" onFire={jest.fn()} playerOnScreen={player} />);
+    for (const dir of ['N', 'S', 'E', 'W']) {
+      expect(getByGestureTestId(`fire-${dir}`)).toBeTruthy();
+      expect(screen.getByTestId(`fire-${dir}`)).toBeTruthy();
+    }
+    const idle = StyleSheet.flatten(screen.getByTestId('fire-E').props.style).backgroundColor;
+    await touchDown('fire-E');
+    const pressed = StyleSheet.flatten(screen.getByTestId('fire-E').props.style).backgroundColor;
+    expect(pressed).not.toBe(idle);
+    await tap('fire-E');
+    expect(StyleSheet.flatten(screen.getByTestId('fire-E').props.style).backgroundColor).toBe(idle);
+    await screen.unmount();
+    await render(<FireZone mode="autoaim" side="right" onFire={jest.fn()} playerOnScreen={player} />);
+    expect(getByGestureTestId('fire-auto')).toBeTruthy();
+    expect(screen.getByTestId('fire-auto').props.accessibilityRole).toBe('button');
   });
 
   it('renders the quadrant circle and the point-and-shoot zone', async () => {

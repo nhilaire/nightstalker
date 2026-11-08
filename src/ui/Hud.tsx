@@ -1,6 +1,8 @@
 // In-game HUD (ported from the prototype): lives, buffs, combo and bonus flash on the left; score, best and ammo on
 // the right; pause button at the top centre.
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { TapButton } from '../controls/TapButton';
 
 import { GUN_AMMO } from '../game/constants';
 import { POWERUP_DEFS } from '../game/powerups';
@@ -65,11 +67,11 @@ export function Hud({ state, onPause }: Props) {
         </View>
       </View>
 
-      <Pressable testID="game-pause" accessibilityLabel={t.game.pause} style={styles.pauseSlot} onPress={onPause} hitSlop={10}>
+      <TapButton testID="game-pause" accessibilityLabel={t.game.pause} style={(pressed) => [styles.pauseSlot, pressed && styles.pausePressed]} onPress={onPause} hitSlop={10}>
         <View style={styles.pauseBtn}>
           <Text style={styles.pauseText}>‖‖</Text>
         </View>
-      </Pressable>
+      </TapButton>
     </View>
   );
 }
@@ -106,6 +108,7 @@ const styles = StyleSheet.create({
   ammoCell: { width: 9, height: 9, borderWidth: 1, borderColor: '#FACC15', marginLeft: 2 },
   ammoFull: { backgroundColor: '#FACC15' },
   pauseSlot: { position: 'absolute', top: 6, left: '50%', marginLeft: -18, width: 36, height: 36 },
+  pausePressed: { opacity: 0.6 },
   pauseBtn: {
     width: 36,
     height: 36,

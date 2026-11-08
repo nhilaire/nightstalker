@@ -3,6 +3,7 @@ import { logEvent } from '@react-native-firebase/analytics';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import App from '../App';
+import { tap } from '../test-utils/gestures';
 import { addScore, createGame } from '../game/engine';
 import { POWERUP_KINDS } from '../game/powerups';
 import { seededRng } from '../game/rng';
@@ -73,7 +74,8 @@ describe('telemetry consent in the app (AC-05)', () => {
   async function playAndQuit() {
     await render(<App />);
     await fireEvent.press(await screen.findByTestId('home-play'));
-    await fireEvent.press(await screen.findByTestId('game-pause'));
+    await screen.findByTestId('game-pause');
+    await tap('game-pause');
     await fireEvent.press(screen.getByTestId('pause-quit'));
     await screen.findByTestId('game-over-screen');
   }

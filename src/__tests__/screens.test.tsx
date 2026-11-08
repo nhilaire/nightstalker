@@ -7,6 +7,7 @@ import { POWERUP_KINDS } from '../game/powerups';
 import { DICTIONARIES } from '../i18n';
 import { deviceLanguageTags } from '../i18n/deviceLocale';
 import { addHighScore } from '../storage/highScores';
+import { tap } from '../test-utils/gestures';
 
 const fr = DICTIONARIES.fr;
 
@@ -38,7 +39,7 @@ describe('home, game over and best score (AC-35, AC-37)', () => {
     expect(await screen.findByTestId('game-screen')).toBeTruthy();
     expect(screen.getByTestId('hud-lives')).toHaveTextContent('×6');
     expect(screen.getByTestId('hud-ammo')).toHaveTextContent("PAS D'ARME");
-    await fireEvent.press(screen.getByTestId('game-pause'));
+    await tap('game-pause');
     await fireEvent.press(screen.getByTestId('pause-quit'));
     expect(await screen.findByTestId('game-over-screen')).toBeTruthy();
     expect(screen.getByText(fr.gameover.title)).toBeTruthy();
@@ -46,7 +47,7 @@ describe('home, game over and best score (AC-35, AC-37)', () => {
     expect(await screen.findByText('1.')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('gameover-replay'));
     expect(await screen.findByTestId('game-screen')).toBeTruthy();
-    await fireEvent.press(screen.getByTestId('game-pause'));
+    await tap('game-pause');
     await fireEvent.press(screen.getByTestId('pause-quit'));
     await fireEvent.press(await screen.findByTestId('gameover-menu'));
     expect(await screen.findByTestId('home-screen')).toBeTruthy();
