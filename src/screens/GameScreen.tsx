@@ -48,8 +48,8 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
   const { t } = useI18n();
   const { width, height } = useWindowDimensions();
   const view = useMemo(() => fitView(width, height), [width, height]);
-  const stateRef = useRef<GameState | null>(null);
-  if (!stateRef.current) stateRef.current = createGame({ highScore, modernMode: settings.modernMode, rng });
+  // The run's state: created once per mount, then mutated in place by the frame loop (the same object all along).
+  const [state] = useState<GameState>(() => createGame({ highScore, modernMode: settings.modernMode, rng }));
   const inputRef = useRef(emptyInput());
   const [, setFrame] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -87,7 +87,6 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
     let last: number | null = null;
     const stats = new FrameStats();
     const step = (now: number) => {
-      const state = stateRef.current!;
       const frameMs = last === null ? 0 : now - last;
       const dt = Math.min(frameMs / 1000, MAX_DT);
       last = now;
@@ -108,7 +107,7 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
     };
     raf = requestFrame(step);
     return () => cancelFrame(raf);
-  }, [finish, onEvents, rng, requestFrame, cancelFrame]);
+  }, [state, finish, onEvents, rng, requestFrame, cancelFrame]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (next) => {
@@ -120,7 +119,7 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
   // Android back never leaves a run: it opens the pause overlay, and closes it (resume) when it is open, like a
   // dialog. Quitting stays an explicit « Quitter ».
   useBackHandler(() => {
-    if (stateRef.current!.phase === 'playing') setPause(!pausedRef.current);
+    if (state.phase === 'playing') setPause(!pausedRef.current);
     return true;
   });
 
@@ -134,22 +133,20 @@ export function GameScreen({ settings, highScore, onGameOver, onEvents, onPauseC
   }, []);
 
   const playerOnScreen = useCallback(() => {
-    const p = stateRef.current!.player;
+    const p = state.player;
     return { x: view.offsetX + p.x * view.scale, y: view.offsetY + p.y * view.scale };
-  }, [view]);
+  }, [state, view]);
 
   const quit = useCallback(() => {
-    const state = stateRef.current!;
     quitGame(state);
     onEvents?.(state.events, state);
     finish(state);
-  }, [finish, onEvents]);
+  }, [state, finish, onEvents]);
 
   const cheatTap = (cheat: Cheat) => {
-    if (cheats.current.tap(cheat, Date.now())) applyCheat(stateRef.current!, cheat);
+    if (cheats.current.tap(cheat, Date.now())) applyCheat(state, cheat);
   };
 
-  const state = stateRef.current;
   const time = state.elapsed;
   const picture = createPicture((canvas) => drawScene(canvas, state, view, time));
   const sides = controlSides(settings.swapControls);
